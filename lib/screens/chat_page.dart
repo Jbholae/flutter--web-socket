@@ -6,14 +6,14 @@ import 'package:web_socket_test/screens/chat_detail_page.dart';
 
 import '../widgets/conversation_list.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatScreenState extends State<ChatScreen> {
   List<ChatUsers> chatUsers = [
     ChatUsers(
         name: "Jane Russel",
