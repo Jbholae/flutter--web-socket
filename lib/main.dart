@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_test/home_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -37,10 +36,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
   final _channel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:8000/ws'),
+    Uri.parse('ws://192.168.1.71:8000/chat?name=jhon'),
     // Uri.parse('ws://localhost:8080/socket'),
     // Uri.parse('wss://echo.websocket.events'),
   );
+
+  @override
+  void initState() {
+    _channel.stream.listen((event) {
+      var data = jsonDecode(event);
+      print(data["action"]);
+      print(data["message"]);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,32 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Form(
               child: TextFormField(
                 controller: _controller,
-                decoration: const InputDecoration(labelText: 'Send a message'),
+                decoration: const InputDecoration(labelText: 'Room name'),
               ),
             ),
-            const SizedBox(height: 24),
-            StreamBuilder(
-              stream: _channel.stream,
-              builder: (context, snapshot) {
-                var msg = Datas.fromJson(
-                  jsonDecode(snapshot.data),
-                );
-                List? list = [];
-                list.add(msg.body);
-                return Text(snapshot.hasData ? '${snapshot.data}' : '');
-                // return Text(snapshot.hasData ? msg.body! : '');
-                // return Flexible(
-                //   flex: 1,
-                //   fit: FlexFit.tight,
-                //   child: ListView.builder(
-                //     itemCount: list.length,
-                //     itemBuilder: (context, index) {
-                //       return Text("${list[index]}");
-                //     },
-                //   ),
-                // );
-              },
-            )
           ],
         ),
       ),
@@ -95,7 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
-      _channel.sink.add(_controller.text);
+      _channel.sink.add(jsonEncode({
+        "action": "join-room",
+        "message": _controller.text,
+      }));
     }
   }
 
