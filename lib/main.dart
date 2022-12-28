@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_test/home_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,10 +14,10 @@ class MyApp extends StatelessWidget {
     const title = 'WebSocket Demo';
     return const MaterialApp(
       title: title,
-      // home: HomePage(),
-      home: MyHomePage(
-        title: title,
-      ),
+      home: HomePage(),
+      // home: MyHomePage(
+      //   title: title,
+      // ),
     );
   }
 }
