@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:web_socket_test/screens/chat_page.dart';
 import 'package:web_socket_test/screens/profile.dart';
 import 'package:web_socket_test/screens/rooms.dart';
 
@@ -14,42 +11,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  int _currentIndex = 0;
   Widget build(BuildContext context) {
-    int currentIndex = 1;
-    Widget screens() {
-      switch (currentIndex) {
+    _callPage(int current) {
+      switch (current) {
         case 0:
-          return const ChatScreen();
-
-        case 1:
           return const RoomsScreen();
-
-        case 3:
+        case 1:
           return const ProfileScreen();
         default:
-          return const ChatScreen();
       }
     }
 
-    void updateIndex(int value) {
-      setState(() {
-        currentIndex = value;
-        print(currentIndex);
-      });
+    void onTapped(int index) {
+      _currentIndex = index;
+      setState(() {});
     }
 
     return Scaffold(
-      body: screens(),
+      body: _callPage(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(
+        onTap: onTapped,
+        currentIndex: _currentIndex,
         selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey.shade600,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: "Chats",
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group_work),
             label: "Rooms",
@@ -59,12 +47,6 @@ class _HomePageState extends State<HomePage> {
             label: "Profile",
           ),
         ],
-        currentIndex: currentIndex,
-        onTap: (value) {
-          setState(() {
-            currentIndex = value;
-          });
-        },
       ),
     );
   }
