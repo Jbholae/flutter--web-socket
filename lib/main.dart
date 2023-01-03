@@ -1,10 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_test/home_page.dart';
+import 'package:web_socket_test/providers.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(
+      MultiProvider(
+        providers: providers,
+        child: const MyApp(),
+      ),
+    );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
