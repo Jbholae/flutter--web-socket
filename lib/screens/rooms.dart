@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_test/provider/create_room.dart';
 import 'package:web_socket_test/provider/user_chat_rooms.dart';
 import 'package:web_socket_test/screens/chat_detail_page.dart';
 
@@ -11,9 +12,10 @@ class RoomsScreen extends StatefulWidget {
 }
 
 class _RoomsScreenState extends State<RoomsScreen> {
+  TextEditingController roomNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    Provider.of<UserChatRoomsProvider>(context).getChatRoom(1);
+    Provider.of<UserChatRoomsProvider>(context, listen: false).getChatRoom(1);
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -80,15 +82,17 @@ class _RoomsScreenState extends State<RoomsScreen> {
           showModalBottomSheet(
               context: context,
               builder: (context) {
+                Provider.of<CreateRoomProvider>(context, listen: false);
                 return Container(
                   padding: const EdgeInsets.all(10),
                   height: MediaQuery.of(context).size.height * 0.5,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: roomNameController,
+                          decoration: const InputDecoration(
                             label: Text('Room Name'),
                           ),
                         ),
@@ -110,11 +114,20 @@ class _RoomsScreenState extends State<RoomsScreen> {
                               ),
                               label: const Text('Cancel'),
                             ),
-                            ElevatedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.add),
-                              label: const Text('Confirm'),
-                            ),
+                            Consumer<CreateRoomProvider>(
+                                builder: (context, room, child) {
+                              return ElevatedButton.icon(
+                                onPressed: () {
+                                  room.createRoom(roomNameController.text);
+                                },
+                                icon: const Icon(Icons.add),
+                                label: room.loading
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : const Text('Confirm'),
+                              );
+                            }),
                           ],
                         ),
                       ),
