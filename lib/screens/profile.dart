@@ -17,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    Provider.of<CreateUserProvider>(context);
+    Provider.of<CreateUserProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(
