@@ -17,8 +17,11 @@ class APIServices {
         "email": email,
       });
       final response = await dio.post(
-        "localhost:8000/api/user",
-        data: formData,
+        "localhost:8000/users",
+        data: FormData.fromMap({
+          "name": name,
+          "email": email,
+        }),
       );
       if (response.statusCode == 200) {
         var data = ChatUsers.fromJson(response.data);
@@ -32,10 +35,28 @@ class APIServices {
     return chatUsers;
   }
 
+  Future<ChatRoom> createRoom(String name) async {
+    ChatRoom chatRoom = ChatRoom();
+    try {
+      final response = await dio.post("localhost:8000/rooms",
+          data: FormData.fromMap({
+            "name": name,
+          }));
+      if (response.statusCode == 200) {
+        var data = ChatRoom.fromJson(response.data);
+        chatRoom = data;
+        return chatRoom;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return chatRoom;
+  }
+
   Future<ChatRoom> getUserRoom(int userId) async {
     ChatRoom chatRoom = ChatRoom();
     try {
-      final response = await dio.get("localhost:8000/api/user/$userId");
+      final response = await dio.get("localhost:8000/user/$userId");
       if (response.statusCode == 200) {
         var data = ChatRoom.fromJson(response.data);
         chatRoom = data;
