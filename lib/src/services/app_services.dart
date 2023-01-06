@@ -23,7 +23,10 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future getUserRoom(int? userId) async {
-    return await dio.get("/rooms/$userId");
+  Future<List<ChatRoom>> getUserRoom(int? userId) async {
+    final response = await dio.get("/rooms/$userId");
+    List data = response.data['data'];
+    List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
+    return dataList;
   }
 }
