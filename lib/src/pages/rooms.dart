@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'chat_detail_page.dart';
+
+import '../app.dart';
 
 class RoomsScreen extends StatefulWidget {
-  const RoomsScreen({key});
+  const RoomsScreen({super.key});
 
   @override
   State<RoomsScreen> createState() => _RoomsScreenState();
@@ -10,59 +11,32 @@ class RoomsScreen extends StatefulWidget {
 
 class _RoomsScreenState extends State<RoomsScreen> {
   TextEditingController roomNameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemCount: 20,
-            itemBuilder: (BuildContext context, int index) {
-              return Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlueAccent,
-                    borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(width: 1),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(40),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          index.toString(),
-                        ),
-                      ),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChatDetailPage(
-                                  name: index.toString(),
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.meeting_room,
-                          ),
-                          label: const Text('Enter'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          itemCount: 20,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: Text(
+                "Name $index",
+              ),
+              leading: const CircleAvatar(
+                backgroundImage: NetworkImage(
+                    "https://randomuser.me/api/portraits/men/5.jpg"),
+                maxRadius: 20,
+              ),
+              onTap: () {
+                mainNavigator.currentState?.pushNamed("/chat", arguments: index.toString());
+              },
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return const Divider();
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -136,14 +136,12 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         actionsIconTheme: IconThemeData(color: AppColors.black),
         shadowColor: Colors.transparent,
-        backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: AppColors.black),
         titleTextStyle: TextStyle(color: AppColors.black),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        backgroundColor: Colors.white,
         selectedLabelStyle: captionBold,
         unselectedLabelStyle: captionRegular,
       ),

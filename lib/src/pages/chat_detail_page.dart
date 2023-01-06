@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/chat_message_model.dart';
 
 class ChatDetailPage extends StatefulWidget {
-  const ChatDetailPage({Key? key, required this.name}) : super(key: key);
+  const ChatDetailPage({super.key, required this.name});
+
   final String name;
 
   @override
@@ -33,6 +34,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       messageType: "sender",
     ),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +61,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 ),
                 const CircleAvatar(
                   backgroundImage: NetworkImage(
-                      "<https://randomuser.me/api/portraits/men/5.jpg>"),
+                      "https://randomuser.me/api/portraits/men/5.jpg"),
                   maxRadius: 20,
                 ),
                 const SizedBox(
