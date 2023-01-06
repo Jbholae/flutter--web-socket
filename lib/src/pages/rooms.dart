@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../app.dart';
+import '../core/utils/snack_bar.dart';
+import '../injector.dart';
+import '../models/rooms/chat_room_model.dart';
+import '../providers/auth_provider.dart';
 
 class RoomsScreen extends StatefulWidget {
   const RoomsScreen({super.key});
@@ -30,7 +35,8 @@ class _RoomsScreenState extends State<RoomsScreen> {
                 maxRadius: 20,
               ),
               onTap: () {
-                mainNavigator.currentState?.pushNamed("/chat", arguments: index.toString());
+                mainNavigator.currentState
+                    ?.pushNamed("/chat", arguments: index.toString());
               },
             );
           },
@@ -76,7 +82,18 @@ class _RoomsScreenState extends State<RoomsScreen> {
                               label: const Text('Cancel'),
                             ),
                             ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () async {
+                                var user = Provider.of<AuthProvider>(context,
+                                        listen: false)
+                                    .dbUser;
+                                final response = await apiService.createRoom(
+                                  request: ChatRoom(
+                                    name: roomNameController.text,
+                                    ownerId: user?.id,
+                                  ),
+                                );
+                                showSuccess(message: response as String);
+                              },
                               icon: const Icon(Icons.add),
                               label: const Text('Confirm'),
                             )
