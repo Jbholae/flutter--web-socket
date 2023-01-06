@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../app.dart';
 import '../core/utils/snack_bar.dart';
+import '../injector.dart';
 import '../models/user/user.dart';
 import '../providers/auth_provider.dart';
-import '../services/app_services.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -49,17 +49,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      final user = User(
+                      final response = await apiService.createUser(
+                          data: User(
                         email: emailController.text,
                         name: nameController.text,
                         id: 0,
-                      );
-                      final response = await AppRepoImplementation()
-                          .createUser(data: user);
+                      ));
                       final data = response.data as Map<String, dynamic>;
 
-                      if (data.containsKey("msg")) {
-                        Provider.of<AuthProvider>(context, listen: false).setAuthUser(user);
+                      if (data.containsKey("data")) {
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .setAuthUser(User.fromJson(data["data"]));
                         mainNavigator.currentState?.pushNamed("/");
 
                         // TODO :: Navigate to Room List Screen
