@@ -61,9 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Provider.of<AuthProvider>(context, listen: false)
                             .setAuthUser(User.fromJson(data["data"]));
                         mainNavigator.currentState?.pushNamed("/");
-
-                        // TODO :: Navigate to Room List Screen
-                        showSuccess(message: data["msg"]);
+                        showSuccess(message: data["data"]);
                       } else if (data.containsKey("error")) {
                         showError(message: data["error"]);
                       }
