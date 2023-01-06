@@ -1,5 +1,5 @@
 class ChatRoom {
-  String? id;
+  int? id;
   String? name;
   int? ownerId;
   DateTime? createdAt;
