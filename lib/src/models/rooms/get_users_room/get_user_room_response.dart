@@ -1,18 +1,11 @@
 class ChatRoomResponse {
-  ChatRoomResponseData? responseData;
+  List<ChatRoomResponseData>? responseData;
   ChatRoomResponse({this.responseData});
 
   ChatRoomResponse.fromJson(Map<String, dynamic> json) {
-    responseData =
-        json['msg'] != null ? ChatRoomResponseData.fromJson(json['msg']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (responseData != null) {
-      data['msg'] = responseData!.toJson();
-    }
-    return data;
+    responseData = json['data']
+        .map<ChatRoomResponse>((e) => ChatRoomResponse.fromJson(e))
+        .toList();
   }
 }
 
