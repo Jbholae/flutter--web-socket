@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../app.dart';
 import '../core/utils/snack_bar.dart';
-import '../models/user/create_user/create_user_request.dart';
+import '../models/user/user.dart';
+import '../providers/auth_provider.dart';
 import '../services/app_services.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -46,19 +49,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      Map<String, dynamic> response =
-                          await AppRepoImplementation().createUser(
-                              request: CreateUserRequest(
+                      final user = User(
                         email: emailController.text,
                         name: nameController.text,
-                      ));
+                        id: 0,
+                      );
+                      final response = await AppRepoImplementation()
+                          .createUser(data: user);
+                      final data = response.data as Map<String, dynamic>;
 
-                      if (response.containsKey("msg")) {
-                        // TODO :: save user in local storage
+                      if (data.containsKey("msg")) {
+                        Provider.of<AuthProvider>(context, listen: false).setAuthUser(user);
+                        mainNavigator.currentState?.pushNamed("/");
+
                         // TODO :: Navigate to Room List Screen
-                        showSuccess(message: response["msg"]);
-                      } else if (response.containsKey("error")) {
-                        showError(message: response["error"]);
+                        showSuccess(message: data["msg"]);
+                      } else if (data.containsKey("error")) {
+                        showError(message: data["error"]);
                       }
                     }
                   },

@@ -1,14 +1,16 @@
+import 'package:dio/dio.dart';
+
 import '../config/api/api.dart';
 import '../models/rooms/chat_room_model.dart';
-import '../models/user/create_user/create_user_request.dart';
+import '../models/user/user.dart';
 import 'app_repo.dart';
 
 class AppRepoImplementation implements AppRepo {
   @override
-  Future createUser({CreateUserRequest? request}) async {
-    return await dio.post(
+  Future<Response> createUser({required User data}) {
+    return dio.post(
       "/users",
-      data: request!.toJson(),
+      data: data.toJson(),
     );
   }
 
