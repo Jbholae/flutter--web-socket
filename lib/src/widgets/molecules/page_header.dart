@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PageHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -20,7 +19,7 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            tr("Skeleton"),
+            "Skeleton",
             style: Theme.of(context).textTheme.headline1,
           )
         ],

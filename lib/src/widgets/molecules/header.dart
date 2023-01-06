@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,11 +20,11 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
             }
             return Button(
               type: ButtonType.transparent,
-              child: Text(tr("Logout")),
               trailingIcon: const Icon(Icons.directions_bus, size: 24),
               textStyle: Theme.of(context).textTheme.subtitle1,
               disableBorder: true,
               onPressed: () {},
+              child: const Text("Logout"),
             );
           },
         ),

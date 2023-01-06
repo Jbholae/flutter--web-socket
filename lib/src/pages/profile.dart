@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_skeleton/src/core/utils/api_error.dart';
-import 'package:flutter_skeleton/src/core/utils/snack_bar.dart';
-import 'package:flutter_skeleton/src/services/app_repo.dart';
-import 'package:flutter_skeleton/src/services/app_services.dart';
-import 'package:flutter_skeleton/src/models/user/create_user/create_user_request.dart';
-import 'package:flutter_skeleton/src/models/user/create_user/create_user_response.dart';
-import 'package:provider/provider.dart';
+
+import '../core/utils/api_error.dart';
+import '../core/utils/snack_bar.dart';
+import '../models/user/create_user/create_user_request.dart';
+import '../models/user/create_user/create_user_response.dart';
+import '../services/app_repo.dart';
+import '../services/app_services.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -19,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController emailController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     AppRepo? appRepo;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_skeleton/src/app.dart';
-import 'package:flutter_skeleton/src/pages/home_page.dart';
-import 'package:flutter_skeleton/src/pages/profile.dart';
 import 'package:provider/provider.dart';
 
+import '../../app.dart';
+import '../../pages/home_page.dart';
+import '../../pages/profile.dart';
 import '../../providers/auth_provider.dart';
 
 class AppRouter {

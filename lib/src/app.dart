@@ -1,7 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -35,7 +33,7 @@ class App extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: kDebugMode,
             navigatorKey: mainNavigator,
-            title: tr("Skeleton"),
+            title: ("Skeleton"),
             theme: AppTheme.light,
             initialRoute: context.watch<AuthProvider>().loggedIn ? "/" : "user",
             onGenerateRoute: (settings) {
@@ -43,11 +41,6 @@ class App extends StatelessWidget {
                 settings,
               );
             },
-            // localizationsDelegates: [
-            //   FormBuilderLocalizations.delegate,
-            //   ...context.localizationDelegates
-            // ],
-            // supportedLocales: context.supportedLocales,
           );
         });
       },

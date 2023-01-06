@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter_skeleton/src/core/utils/api_error.dart';
-import 'package:flutter_skeleton/src/core/utils/message.dart';
+
+import '../core/utils/api_error.dart';
+import '../core/utils/message.dart';
 
 enum MethodType { POST, GET, PUT, DELETE }
 

@@ -1,10 +1,10 @@
-import 'package:flutter_skeleton/src/core/utils/api_error.dart';
-import 'package:flutter_skeleton/src/models/rooms/chat_room_model.dart';
-import 'package:flutter_skeleton/src/network/api_handler.dart';
-import 'package:flutter_skeleton/src/models/user/create_user/create_user_request.dart';
-import 'package:flutter_skeleton/src/models/user/create_user/create_user_response.dart';
 
+import '../core/utils/api_error.dart';
+import '../models/rooms/chat_room_model.dart';
 import '../models/rooms/create_room_response.dart';
+import '../models/user/create_user/create_user_request.dart';
+import '../models/user/create_user/create_user_response.dart';
+import '../network/api_handler.dart';
 import 'app_repo.dart';
 
 class AppRepoImplementation implements AppRepo {
