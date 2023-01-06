@@ -19,31 +19,45 @@ class _RoomsScreenState extends State<RoomsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthProvider>(context, listen: false).dbUser;
     return Scaffold(
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          itemCount: 20,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(
-                "Name $index",
-              ),
-              leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://randomuser.me/api/portraits/men/5.jpg"),
-                maxRadius: 20,
-              ),
-              onTap: () {
-                mainNavigator.currentState
-                    ?.pushNamed("/chat", arguments: index.toString());
-              },
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return const Divider();
-          },
-        ),
+        child: FutureBuilder<List<ChatRoom>>(
+            future: apiService.getUserRoom(user?.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  var data = snapshot.data;
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var chatData = data[index];
+                      return ListTile(
+                        title: Text(
+                          "Name : ${chatData.name}",
+                        ),
+                        leading: const CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              "https://randomuser.me/api/portraits/men/5.jpg"),
+                          maxRadius: 20,
+                        ),
+                        onTap: () {
+                          mainNavigator.currentState
+                              ?.pushNamed("/chat", arguments: index.toString());
+                        },
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const Divider();
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+              }
+              return const CircularProgressIndicator();
+            }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
