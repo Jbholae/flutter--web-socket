@@ -1,4 +1,4 @@
 class Config {
-  static const apiUrl = "https://apiurl";
+  static const apiUrl = "http://localhost:8000";
   static const locale = "en";
 }

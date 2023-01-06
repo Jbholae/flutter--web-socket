@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../core/utils/api_error.dart';
 import '../core/utils/snack_bar.dart';
 import '../models/user/create_user/create_user_request.dart';
-import '../models/user/create_user/create_user_response.dart';
-import '../services/app_repo.dart';
 import '../services/app_services.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -22,8 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppRepo? appRepo;
-
     return Scaffold(
       body: SafeArea(
         child: Form(
@@ -51,17 +46,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      CreateUserRequest request = CreateUserRequest(
+                      Map<String, dynamic> response =
+                          await AppRepoImplementation().createUser(
+                              request: CreateUserRequest(
                         email: emailController.text,
                         name: nameController.text,
-                      );
-                      final response = await AppRepoImplementation()
-                          .createUser(request: request);
+                      ));
 
-                      if (response is CreateUserResponse) {
-                        showSuccess(message: "Yeah");
-                      } else if (response is APIError) {
-                        showError(message: response.error.toString());
+                      if (response.containsKey("msg")) {
+                        // TODO :: save user in local storage
+                        // TODO :: Navigate to Room List Screen
+                        showSuccess(message: response["msg"]);
+                      } else if (response.containsKey("error")) {
+                        showError(message: response["error"]);
                       }
                     }
                   },
