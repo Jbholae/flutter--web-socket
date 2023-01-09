@@ -2,9 +2,9 @@ class ChatRoom {
   int? id;
   String? name;
   int? ownerId;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  DateTime? deletedAt;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
 
   ChatRoom({
     this.createdAt,
