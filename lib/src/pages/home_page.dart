@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'profile.dart';
+import 'register_user.dart';
 import 'rooms.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
         case 0:
           return const RoomsScreen();
         case 1:
-          return const ProfileScreen();
+          return const RegisterUser();
         default:
       }
     }
