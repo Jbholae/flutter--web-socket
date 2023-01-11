@@ -7,28 +7,30 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.4 <3.0.0'
+  sdk: ">=2.18.4 <3.0.0"
 
 dependencies:
   cupertino_icons: ^1.0.5
+  dio: ^4.0.6
+  firebase_auth: ^4.2.5
+  firebase_core: ^2.4.1
   flutter:
     sdk: flutter
-  dio: ^4.0.6
   provider: ^6.0.5
-  web_socket_channel: ^2.2.0
-  sizer: ^2.0.15
   shared_preferences: ^2.0.15
+  sizer: ^2.0.15
+  web_socket_channel: ^2.2.0
 
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-
-  flutter_lints: ^2.0.1
 
 flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   # assets:
+
   # Add assets from the images directory to the application.
   # - assets/images/
   # - assets/translations/
