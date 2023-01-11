@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app.dart';
 import '../../pages/chat_detail_page.dart';
 import '../../pages/home_page.dart';
-import '../../pages/profile.dart';
+import '../../pages/register_user.dart';
 import '../../providers/auth_provider.dart';
 
 class AppRouter {
@@ -14,7 +14,7 @@ class AppRouter {
     if (!authContext.loggedIn) {
       switch (settings.name) {
         case 'user':
-          return _materialRoute(const ProfileScreen());
+          return _materialRoute(const RegisterUser());
       }
     }
 
@@ -23,7 +23,8 @@ class AppRouter {
         case '/':
           return _materialRoute(const HomePage());
         case "/chat":
-          return _materialRoute(ChatDetailPage(name: settings.arguments as String));
+          return _materialRoute(
+              ChatDetailPage(name: settings.arguments as String));
       }
     }
 
