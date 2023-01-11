@@ -5,6 +5,7 @@ class User extends Indexable {
     required this.id,
     required this.name,
     required this.email,
+    required this.password,
     this.updatedAt,
     this.createdAt,
   }) : super(id);
@@ -12,6 +13,7 @@ class User extends Indexable {
   int id;
   String? name;
   String? email;
+  String? password;
   String? updatedAt;
   String? createdAt;
 
@@ -19,6 +21,7 @@ class User extends Indexable {
         id: json['id'] as int,
         name: json['first_name'],
         email: json['email'],
+        password: json['password'],
         updatedAt: json['updated_at'],
         createdAt: json['created_at'],
       );
@@ -28,6 +31,7 @@ class User extends Indexable {
         "id": id,
         "full_name": name,
         "email": email,
+        "password": password,
         "updated_at": updatedAt,
         "created_at": createdAt,
       };
