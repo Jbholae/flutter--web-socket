@@ -5,12 +5,12 @@ class User extends Indexable {
     required this.id,
     required this.name,
     required this.email,
-    required this.password,
+    this.password,
     this.updatedAt,
     this.createdAt,
-  }) : super(id);
+  }) : super(0);
 
-  int id;
+  dynamic id;
   String? name;
   String? email;
   String? password;
@@ -18,7 +18,7 @@ class User extends Indexable {
   String? createdAt;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json['id'] as int,
+        id: json['id'],
         name: json['first_name'],
         email: json['email'],
         password: json['password'],
