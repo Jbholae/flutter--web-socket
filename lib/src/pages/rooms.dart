@@ -23,7 +23,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<List<ChatRoom>>(
-            future: apiService.getUserRoom(user?.id),
+            future: apiService.getUserRoom(user!.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
@@ -107,7 +107,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                                 final response = await apiService.createRoom(
                                   request: ChatRoom(
                                     name: roomNameController.text,
-                                    ownerId: user?.id,
+                                    ownerId: user!.id,
                                   ),
                                 );
                                 showSuccess(message: response as String);
