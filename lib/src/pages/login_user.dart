@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../app.dart';
 import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
+import '../models/user/user.dart' as userData;
 import '../providers/auth_provider.dart';
 
 class LoginUser extends StatefulWidget {
@@ -74,17 +73,10 @@ class _LoginUserState extends State<LoginUser> {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
                     try {
-                      firebaseAuth
-                          .signInWithEmailAndPassword(
+                      firebaseAuth.signInWithEmailAndPassword(
                         email: formKey.currentState?.value['email'],
                         password: formKey.currentState?.value['password'],
-                      )
-                          .then((value) {
-                        if (value.user != null) {
-                          // Provider.of<AuthProvider>(context, listen: false);
-                          mainNavigator.currentState?.pushNamed("/");
-                        }
-                      });
+                      );
                       print("valid");
                     } on FirebaseAuthException catch (e) {
                       showError(message: e.toString());
@@ -92,7 +84,29 @@ class _LoginUserState extends State<LoginUser> {
                   }
                 },
                 child: const Text('Login'),
-              )
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    ElevatedButton(
+                      // trailingIcon: const Icon(
+                      //   Icons.arrow_forward_rounded,
+                      //   size: 22,
+                      // ),
+                      onPressed: () => Navigator.of(context).pushNamed("user"),
+                      child: const Text("Create"),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
