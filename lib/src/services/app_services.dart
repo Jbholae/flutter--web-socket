@@ -9,7 +9,7 @@ class AppRepoImplementation implements AppRepo {
   @override
   Future<Response> createUser({required User data}) {
     return dio.post(
-      "/users",
+      "/create",
       data: data.toJson(),
     );
   }
@@ -23,7 +23,7 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<ChatRoom>> getUserRoom(int? userId) async {
+  Future<List<ChatRoom>> getUserRoom(String? userId) async {
     final response = await dio.get("/rooms/$userId");
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
