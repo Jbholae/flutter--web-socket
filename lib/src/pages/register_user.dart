@@ -80,7 +80,7 @@ class _RegisterUserState extends State<RegisterUser> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (!formKey.currentState!.validate()) {
+                    if (formKey.currentState!.validate()) {
                       formKey.currentState?.save();
                       print('valid');
                       final response = await apiService.createUser(
