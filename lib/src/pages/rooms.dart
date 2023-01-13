@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../app.dart';
 import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/rooms/chat_room_model.dart';
-import '../providers/auth_provider.dart';
 
 class RoomsScreen extends StatefulWidget {
   const RoomsScreen({super.key});
@@ -15,15 +13,16 @@ class RoomsScreen extends StatefulWidget {
 }
 
 class _RoomsScreenState extends State<RoomsScreen> {
+  Future<List<ChatRoom>> myFuture = apiService.getUserRoom();
+
   TextEditingController roomNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<AuthProvider>(context, listen: false).dbUser;
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<List<ChatRoom>>(
-            future: apiService.getUserRoom(user!.id),
+            future: myFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
@@ -47,8 +46,10 @@ class _RoomsScreenState extends State<RoomsScreen> {
                                 maxRadius: 20,
                               ),
                               onTap: () {
-                                mainNavigator.currentState?.pushNamed("/chat",
-                                    arguments: index.toString());
+                                mainNavigator.currentState?.pushNamed(
+                                  "/chat",
+                                  arguments: index.toString(),
+                                );
                               },
                             );
                           },
@@ -101,16 +102,16 @@ class _RoomsScreenState extends State<RoomsScreen> {
                             ),
                             ElevatedButton.icon(
                               onPressed: () async {
-                                var user = Provider.of<AuthProvider>(context,
-                                        listen: false)
-                                    .dbUser;
                                 final response = await apiService.createRoom(
                                   request: ChatRoom(
                                     name: roomNameController.text,
-                                    ownerId: user!.id,
                                   ),
                                 );
-                                showSuccess(message: response as String);
+                                Navigator.pop(context);
+                                showSuccess(message: response.data['msg']);
+                                setState(() {
+                                  myFuture = apiService.getUserRoom();
+                                });
                               },
                               icon: const Icon(Icons.add),
                               label: const Text('Confirm'),
