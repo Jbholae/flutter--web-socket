@@ -9,9 +9,12 @@ import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
 import '../models/user/user.dart' as userData;
 import '../providers/auth_provider.dart';
+import 'register_user.dart';
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
+
+  static const String routeName = "login";
 
   @override
   State<LoginUser> createState() => _LoginUserState();
@@ -101,7 +104,8 @@ class _LoginUserState extends State<LoginUser> {
                       //   Icons.arrow_forward_rounded,
                       //   size: 22,
                       // ),
-                      onPressed: () => Navigator.of(context).pushNamed("user"),
+                      onPressed: () => Navigator.of(context)
+                          .pushNamed(RegisterUser.routeName),
                       child: const Text("Create"),
                     ),
                   ],
