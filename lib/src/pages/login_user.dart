@@ -2,13 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:provider/provider.dart';
 
-import '../app.dart';
 import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
-import '../models/user/user.dart' as userData;
-import '../providers/auth_provider.dart';
 import 'register_user.dart';
 
 class LoginUser extends StatefulWidget {
@@ -22,8 +18,6 @@ class LoginUser extends StatefulWidget {
 
 class _LoginUserState extends State<LoginUser> {
   final formKey = GlobalKey<FormBuilderState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   bool visibility = true;
 
   @override
@@ -42,7 +36,6 @@ class _LoginUserState extends State<LoginUser> {
               ),
               FormBuilderTextField(
                 name: "email",
-                controller: emailController,
                 decoration: const InputDecoration(
                   hintText: "Email",
                 ),
@@ -53,7 +46,6 @@ class _LoginUserState extends State<LoginUser> {
               ),
               FormBuilderTextField(
                 name: "password",
-                controller: passwordController,
                 decoration: InputDecoration(
                     hintText: "Password",
                     suffixIcon: IconButton(
@@ -80,7 +72,6 @@ class _LoginUserState extends State<LoginUser> {
                         email: formKey.currentState?.value['email'],
                         password: formKey.currentState?.value['password'],
                       );
-                      print("valid");
                     } on FirebaseAuthException catch (e) {
                       showError(message: e.toString());
                     }

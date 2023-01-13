@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'services/app_services.dart';
 
 late SharedPreferences sharedPreferences;
@@ -9,4 +11,8 @@ Future<void> initializeDependencies() async {
   await Firebase.initializeApp();
   sharedPreferences = await SharedPreferences.getInstance();
   apiService = AppRepoImplementation();
+}
+
+void dismissKeyboard() {
+  FocusManager.instance.primaryFocus?.unfocus();
 }

@@ -8,7 +8,7 @@ class ChatDetailPage extends StatefulWidget {
   final String name;
 
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState();
+  State<ChatDetailPage> createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 import '../app.dart';
 import '../core/utils/snack_bar.dart';
@@ -14,8 +16,7 @@ class RoomsScreen extends StatefulWidget {
 
 class _RoomsScreenState extends State<RoomsScreen> {
   Future<List<ChatRoom>> myFuture = apiService.getUserRoom();
-
-  TextEditingController roomNameController = TextEditingController();
+  final formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -66,61 +67,58 @@ class _RoomsScreenState extends State<RoomsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalBottomSheet(
+          showDialog(
               context: context,
+              barrierDismissible: true,
               builder: (context) {
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Flexible(
-                        child: TextField(
-                          controller: roomNameController,
-                          decoration: const InputDecoration(
-                            label: Text('Room Name'),
-                          ),
-                        ),
+                return AlertDialog(
+                  title: const Text('Create Room'),
+                  content: FormBuilder(
+                    autoFocusOnValidationFailure: true,
+                    key: formKey,
+                    child: FormBuilderTextField(
+                      decoration: const InputDecoration(
+                        label: Text('Room Name'),
                       ),
-                      Flexible(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton.icon(
-                              style: const ButtonStyle(
-                                backgroundColor:
-                                    MaterialStatePropertyAll(Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.cancel_sharp,
-                              ),
-                              label: const Text('Cancel'),
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                final response = await apiService.createRoom(
-                                  request: ChatRoom(
-                                    name: roomNameController.text,
-                                  ),
-                                );
-                                Navigator.pop(context);
-                                showSuccess(message: response.data['msg']);
-                                setState(() {
-                                  myFuture = apiService.getUserRoom();
-                                });
-                              },
-                              icon: const Icon(Icons.add),
-                              label: const Text('Confirm'),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(errorText: "required"),
+                      ]),
+                      name: 'room_name',
+                    ),
                   ),
+                  actions: [
+                    ElevatedButton.icon(
+                      style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.red),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.cancel_sharp,
+                      ),
+                      label: const Text('Cancel'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          formKey.currentState!.save();
+                          final response = await apiService.createRoom(
+                            request: ChatRoom(
+                              name: formKey.currentState!.value["room_name"],
+                            ),
+                          );
+                          showSuccess(message: response.data['msg']);
+                          setState(() {
+                            myFuture = apiService.getUserRoom();
+                            Navigator.pop(context);
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Confirm'),
+                    )
+                  ],
                 );
               });
         },

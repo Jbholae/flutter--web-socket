@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app.dart';
+import '../../injector.dart';
 import '../../pages/chat_detail_page.dart';
 import '../../pages/home_page.dart';
 import '../../pages/login_user.dart';
@@ -39,6 +40,11 @@ class AppRouter {
   }
 
   static Route<dynamic> _materialRoute(Widget view) {
-    return MaterialPageRoute(builder: (_) => view);
+    return MaterialPageRoute(
+      builder: (_) => GestureDetector(
+        onTap: () => dismissKeyboard(),
+        child: view,
+      ),
+    );
   }
 }
