@@ -10,7 +10,6 @@ class DioAuthInterceptors extends Interceptor {
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     debugPrint(options.uri.toString());
-    handler.next(options);
     String? token = await firebaseAuth.currentUser?.getIdToken();
     if (token != null) {
       options.headers
