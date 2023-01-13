@@ -7,6 +7,17 @@ final Dio dio = Dio(
   BaseOptions(
     baseUrl: Config.apiUrl,
   ),
-)..interceptors.add(
-  DioAuthInterceptors(),
-);
+)
+  ..interceptors.add(
+    LogInterceptor(
+      request: true,
+      error: true,
+      requestBody: true,
+      requestHeader: true,
+      responseBody: true,
+      responseHeader: true,
+    ),
+  )
+  ..interceptors.add(
+    DioAuthInterceptors(),
+  );
