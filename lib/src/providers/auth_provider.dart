@@ -8,17 +8,12 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import '../injector.dart';
 import '../models/user/user.dart';
+import '../pages/login_user.dart';
 
 class AuthProvider with ChangeNotifier {
   User? _dbUser;
 
   AuthProvider() {
-    // final user = sharedPreferences.get("auth_user");
-    // if (user != null) {
-    //   _dbUser = User.fromJson(jsonDecode(user as String));
-    //   _loggedIn = true;
-    // }
-
     addListener(() {
       if (mainNavigator.currentContext != null) {
         if (loggedIn &&
@@ -29,8 +24,8 @@ class AuthProvider with ChangeNotifier {
         }
 
         if (ModalRoute.of(mainNavigator.currentContext!)?.settings.name !=
-            "login") {
-          mainNavigator.currentState?.pushReplacementNamed("login");
+            LoginUser.routeName) {
+          mainNavigator.currentState?.pushReplacementNamed(LoginUser.routeName);
         }
       }
     });
@@ -52,13 +47,6 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       sharedPreferences.setBool("loggedIn", _loggedIn);
     });
-  }
-
-  void setAuthUser(User user) async {
-    // sharedPreferences.setString("auth_user", jsonEncode(user.toJson()));
-    _dbUser = user;
-    // _loggedIn = true;
-    notifyListeners();
   }
 
   User? get dbUser => _dbUser;
