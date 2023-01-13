@@ -6,5 +6,5 @@ abstract class AppRepo {
 
   Future createRoom({ChatRoom? request});
 
-  Future getUserRoom(String userId);
+  Future getUserRoom();
 }
