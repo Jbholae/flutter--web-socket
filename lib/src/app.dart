@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 import 'config/routes/app_routes.dart';
 import 'config/themes/app_theme.dart';
+import 'pages/register_user.dart';
 import 'providers/auth_provider.dart';
 import 'providers/onboarding_provider.dart';
 
@@ -35,7 +36,9 @@ class App extends StatelessWidget {
             navigatorKey: mainNavigator,
             title: ("Skeleton"),
             theme: AppTheme.light,
-            initialRoute: context.watch<AuthProvider>().loggedIn ? "/" : "user",
+            initialRoute: context.watch<AuthProvider>().loggedIn
+                ? "/"
+                : RegisterUser.routeName,
             onGenerateRoute: (settings) {
               return AppRouter.onGenerateRoutes(
                 settings,
