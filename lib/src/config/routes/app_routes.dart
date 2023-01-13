@@ -14,16 +14,16 @@ class AppRouter {
         Provider.of<AuthProvider>(mainNavigator.currentContext!, listen: false);
     if (!authContext.loggedIn) {
       switch (settings.name) {
-        case 'user':
+        case RegisterUser.routeName:
           return _materialRoute(const RegisterUser());
-        case 'login':
+        case LoginUser.routeName:
           return _materialRoute(const LoginUser());
       }
     }
 
     if (authContext.loggedIn) {
       switch (settings.name) {
-        case '/':
+        case "/":
           return _materialRoute(const HomePage());
         case "/chat":
           return _materialRoute(
