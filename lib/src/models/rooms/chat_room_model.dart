@@ -1,27 +1,24 @@
 class ChatRoom {
-  int? id;
-  String? name;
-  int? ownerId;
+  int id;
+  String name;
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
 
   ChatRoom({
+    required this.id,
+    required this.name,
     this.createdAt,
     this.deletedAt,
-    this.id,
-    this.ownerId,
-    this.name,
     this.updatedAt,
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
-      createdAt: json['created_at'],
-      deletedAt: json['deleted_at'],
       id: json['id'],
       name: json['name'],
-      ownerId: json['owner_id'],
+      createdAt: json['created_at'],
+      deletedAt: json['deleted_at'],
       updatedAt: json['updated_at'],
     );
   }
@@ -33,7 +30,6 @@ class ChatRoom {
     data['updated_at'] = updatedAt;
     data['id'] = id;
     data['name'] = name;
-    data['owner_id'] = ownerId;
     return data;
   }
 }

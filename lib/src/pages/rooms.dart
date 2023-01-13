@@ -49,7 +49,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                               onTap: () {
                                 mainNavigator.currentState?.pushNamed(
                                   "/chat",
-                                  arguments: index.toString(),
+                                  arguments: chatData.id,
                                 );
                               },
                             );
@@ -105,6 +105,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                           formKey.currentState!.save();
                           final response = await apiService.createRoom(
                             request: ChatRoom(
+                              id: 0,
                               name: formKey.currentState!.value["room_name"],
                             ),
                           );
