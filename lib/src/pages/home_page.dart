@@ -11,8 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
   int _currentIndex = 0;
+  
+  @override
   Widget build(BuildContext context) {
     _callPage(int current) {
       switch (current) {
