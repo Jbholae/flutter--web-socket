@@ -11,25 +11,25 @@ class User extends Indexable {
   }) : super(0);
 
   dynamic id;
-  String? name;
-  String? email;
+  String name;
+  String email;
   String? password;
   String? updatedAt;
   String? createdAt;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'],
-        name: json['first_name'],
+        name: json['name'],
         email: json['email'],
-        password: json['password'],
-        updatedAt: json['updated_at'],
-        createdAt: json['created_at'],
+        password: json['password'] as String?,
+        updatedAt: json['updated_at'] as String?,
+        createdAt: json['created_at'] as String?,
       );
 
   @override
   Map<String, dynamic> toJson() => {
         "id": id,
-        "full_name": name,
+        "name": name,
         "email": email,
         "password": password,
         "updated_at": updatedAt,
