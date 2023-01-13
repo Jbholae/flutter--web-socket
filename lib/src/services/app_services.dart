@@ -17,14 +17,14 @@ class AppRepoImplementation implements AppRepo {
   @override
   Future createRoom({ChatRoom? request}) async {
     return await dio.post(
-      "/rooms",
+      "/rooms/create",
       data: request!.toJson(),
     );
   }
 
   @override
-  Future<List<ChatRoom>> getUserRoom(String? userId) async {
-    final response = await dio.get("/rooms/$userId");
+  Future<List<ChatRoom>> getUserRoom() async {
+    final response = await dio.get("/rooms/get-rooms");
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
     return dataList;
