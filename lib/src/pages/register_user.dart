@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
 import '../app.dart';
+import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/user/user.dart';
@@ -11,6 +12,8 @@ import '../providers/auth_provider.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({Key? key}) : super(key: key);
+
+  static const String routeName = "register";
 
   @override
   State<RegisterUser> createState() => _RegisterUserState();
@@ -82,24 +85,23 @@ class _RegisterUserState extends State<RegisterUser> {
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       formKey.currentState?.save();
-                      print('valid');
-                      final response = await apiService.createUser(
-                          data: User(
+                      final userdata = User(
                         email: formKey.currentState?.value['email'],
                         name: formKey.currentState?.value['name'],
                         password: formKey.currentState?.value['password'],
-                        id: 0,
-                      ));
-                      final data = response.data as Map<String, dynamic>;
+                        id: "",
+                      );
 
-                      if (data.containsKey("data")) {
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .setAuthUser(User.fromJson(data["data"]));
-                        mainNavigator.currentState?.pushNamed("/");
-                        showSuccess(message: data["data"]);
-                      } else if (data.containsKey("error")) {
-                        showError(message: data["error"]);
-                      }
+                      await apiService
+                          .createUser(
+                        data: userdata,
+                      )
+                          .then((value) {
+                        firebaseAuth.signInWithEmailAndPassword(
+                          email: userdata.email,
+                          password: userdata.password!,
+                        );
+                      });
                     }
                   },
                   child: const Text('Register'),
