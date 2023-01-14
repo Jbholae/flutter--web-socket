@@ -49,7 +49,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                               onTap: () {
                                 mainNavigator.currentState?.pushNamed(
                                   "/chat",
-                                  arguments: chatData.id,
+                                  arguments: chatData,
                                 );
                               },
                             );
@@ -72,34 +72,40 @@ class _RoomsScreenState extends State<RoomsScreen> {
               barrierDismissible: true,
               builder: (context) {
                 return AlertDialog(
+                  titlePadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  actionsPadding: const EdgeInsets.all(12),
                   title: const Text('Create Room'),
                   content: FormBuilder(
                     autoFocusOnValidationFailure: true,
                     key: formKey,
                     child: FormBuilderTextField(
-                      decoration: const InputDecoration(
-                        label: Text('Room Name'),
-                      ),
+                      name: 'room_name',
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(errorText: "required"),
                       ]),
-                      name: 'room_name',
+                      decoration: const InputDecoration(hintText: "Room Name"),
                     ),
                   ),
                   actions: [
-                    ElevatedButton.icon(
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.red),
-                      ),
+                    TextButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(
-                        Icons.cancel_sharp,
+                      style: ButtonStyle(
+                        overlayColor: MaterialStateColor.resolveWith((states) =>
+                            Theme.of(context).errorColor.withAlpha(50)),
                       ),
-                      label: const Text('Cancel'),
+                      child: Text(
+                        'Cancel',
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            ?.copyWith(color: Theme.of(context).errorColor),
+                      ),
                     ),
-                    ElevatedButton.icon(
+                    TextButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           formKey.currentState!.save();
@@ -116,8 +122,13 @@ class _RoomsScreenState extends State<RoomsScreen> {
                           });
                         }
                       },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Confirm'),
+                      child: Text(
+                        'Confirm',
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            ?.copyWith(color: Theme.of(context).primaryColor),
+                      ),
                     )
                   ],
                 );
