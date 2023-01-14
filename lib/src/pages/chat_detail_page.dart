@@ -2,6 +2,7 @@ import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show HttpHeaders;
 import 'dart:math' show max, min;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
     show
         AppBar,
@@ -34,6 +35,7 @@ import 'package:flutter/material.dart'
         TextStyle,
         Theme,
         Widget;
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
@@ -73,8 +75,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         );
 
         ws.stream.listen((event) {
+          final data = ChatMessage.fromJson(jsonDecode(event));
+          print(data.user.fullName);
           messageStream.add([
-            ChatMessage.fromJson(jsonDecode(event)),
+            data,
             ...messageStream.value,
           ]);
         });
@@ -126,6 +130,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           stream: messageStream,
           builder: (context, snapshot) {
             final messages = snapshot.data ?? [];
+            final lastIndex = messages.length - 1;
             return Column(
               children: <Widget>[
                 Expanded(
@@ -146,6 +151,27 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
+                      final message = messages[index];
+                      final messageUp =
+                          messages.elementAt(min(index + 1, lastIndex));
+                      if (messageUp.userId != message.userId) {
+                        final date = DateTime.parse('${message.createdAt}');
+                        final diff = DateTime.now().difference(date).inDays;
+                        final time = DateFormat.jm().format(date);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Center(
+                            child: Text(
+                              diff > 6
+                                  ? DateFormat.MMMEd().format(date)
+                                  : diff > 1
+                                      ? '${DateFormat.E().format(date)} $time'
+                                      : time,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                        );
+                      }
                       return const Divider(
                         height: 2,
                         thickness: 0,
