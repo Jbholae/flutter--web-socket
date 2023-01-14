@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:provider/provider.dart';
 
-import '../app.dart';
 import '../config/firebase/auth.dart';
-import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/user/user.dart';
-import '../providers/auth_provider.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({Key? key}) : super(key: key);
@@ -20,9 +16,6 @@ class RegisterUser extends StatefulWidget {
 }
 
 class _RegisterUserState extends State<RegisterUser> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   bool visibility = true;
 
   final formKey = GlobalKey<FormBuilderState>();
@@ -33,7 +26,6 @@ class _RegisterUserState extends State<RegisterUser> {
       body: SafeArea(
         child: FormBuilder(
           key: formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
@@ -43,17 +35,17 @@ class _RegisterUserState extends State<RegisterUser> {
                   child: Text("Register Screen"),
                 ),
                 FormBuilderTextField(
-                  name: "name",
-                  controller: nameController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  name: "full_name",
                   decoration: const InputDecoration(
-                    hintText: "Name",
+                    hintText: "Full Name",
                   ),
                   validator:
                       FormBuilderValidators.required(errorText: "Required"),
                 ),
                 FormBuilderTextField(
                   name: "email",
-                  controller: emailController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: const InputDecoration(
                     hintText: "Email",
                   ),
@@ -65,6 +57,7 @@ class _RegisterUserState extends State<RegisterUser> {
                 ),
                 FormBuilderTextField(
                   name: "password",
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                       hintText: "Password",
                       suffixIcon: IconButton(
@@ -87,7 +80,7 @@ class _RegisterUserState extends State<RegisterUser> {
                       formKey.currentState?.save();
                       final userdata = User(
                         email: formKey.currentState?.value['email'],
-                        name: formKey.currentState?.value['name'],
+                        fullName: formKey.currentState?.value['full_name'],
                         password: formKey.currentState?.value['password'],
                         id: "",
                       );
