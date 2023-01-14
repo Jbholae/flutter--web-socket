@@ -1,8 +1,11 @@
+import 'user/user.dart';
+
 class ChatMessage {
   int id;
   String text;
-  String? userId;
+  String userId;
   int roomId;
+  User user;
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
@@ -11,7 +14,8 @@ class ChatMessage {
     required this.id,
     required this.text,
     required this.roomId,
-    this.userId,
+    required this.userId,
+    required this.user,
     this.deletedAt,
     this.updatedAt,
     this.createdAt,
@@ -21,11 +25,12 @@ class ChatMessage {
     return ChatMessage(
       id: json['id'] as int,
       text: json['text'] as String,
-      userId: json['user_id'] as String?,
+      userId: json['user_id'] as String,
       roomId: json['room_id'] as int,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
       deletedAt: json['deleted_at'] as String?,
+      user: User.fromJson(json['user']),
     );
   }
 }
