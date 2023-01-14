@@ -96,7 +96,7 @@ class _LoginUserState extends State<LoginUser> {
                       //   size: 22,
                       // ),
                       onPressed: () => Navigator.of(context)
-                          .pushNamed(RegisterUser.routeName),
+                          .pushReplacementNamed(RegisterUser.routeName),
                       child: const Text("Create"),
                     ),
                   ],
