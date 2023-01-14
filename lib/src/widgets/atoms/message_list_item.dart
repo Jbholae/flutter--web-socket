@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
     show
         BorderRadius,
@@ -32,8 +33,8 @@ class MessageListItem extends StatelessWidget {
     required this.index,
     required this.lastIndex,
   }) : super(key: key);
-  final radius50 = const Radius.circular(50);
-  final radius8 = const Radius.circular(12);
+  final radius50 = const Radius.circular(24);
+  final radius8 = const Radius.circular(8);
 
   final ChatMessage message;
   final ChatMessage messageUp;
@@ -66,38 +67,41 @@ class MessageListItem extends StatelessWidget {
                 const SizedBox(width: 24),
               const SizedBox(width: 8),
             ],
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: isUser
-                    ? BorderRadius.only(
-                        topLeft: radius50,
-                        bottomLeft: radius50,
-                        topRight: isGroupUpFalse || index == lastIndex
-                            ? radius50
-                            : radius8,
-                        bottomRight:
-                            isGroupDownTrue && index != 0 ? radius8 : radius50,
-                      )
-                    : BorderRadius.only(
-                        topLeft: isGroupUpFalse || index == lastIndex
-                            ? radius50
-                            : radius8,
-                        bottomLeft:
-                            isGroupDownTrue && index != 0 ? radius8 : radius50,
-                        bottomRight: radius50,
-                        topRight: radius50,
-                      ),
-                color: !isUser ? Colors.grey[800] : Colors.blue[400],
+            Flexible(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: isUser
+                      ? BorderRadius.only(
+                          topLeft: radius50,
+                          bottomLeft: radius50,
+                          topRight: isGroupUpFalse || index == lastIndex
+                              ? radius50
+                              : radius8,
+                          bottomRight:
+                              isGroupDownTrue && index != 0 ? radius8 : radius50,
+                        )
+                      : BorderRadius.only(
+                          topLeft: isGroupUpFalse || index == lastIndex
+                              ? radius50
+                              : radius8,
+                          bottomLeft:
+                              isGroupDownTrue && index != 0 ? radius8 : radius50,
+                          bottomRight: radius50,
+                          topRight: radius50,
+                        ),
+                  color: !isUser ? Colors.grey[800] : Colors.blue[400],
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  message.text.trim(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.white),
+                ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                message.text.trim(),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.white),
-              ),
-            )
+            ),
+            const SizedBox(width: 48),
           ],
         );
       },
