@@ -1,5 +1,6 @@
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show HttpHeaders;
+import 'dart:math';
 
 import 'package:flutter/material.dart'
     show
@@ -140,42 +141,48 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         const EdgeInsets.only(bottom: 8, left: 12, right: 12),
                     itemBuilder: (context, index) {
                       final message = messages[index];
+                      final messageDown = messages
+                          .elementAt(max(index - 1, 0));
                       return Consumer<AuthProvider>(
-                          builder: (context, value, _) {
-                        final isUser = value.user!.uid == message.userId;
-                        return Row(
-                          textDirection:
-                              isUser ? TextDirection.rtl : TextDirection.ltr,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            if (!isUser) ...[
-                              const CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    "https://randomuser.me/api/portraits/men/7.jpg"),
-                                maxRadius: 12,
-                              ),
-                              const SizedBox(width: 8),
+                        builder: (context, value, _) {
+                          final isUser = value.user!.uid == message.userId;
+                          return Row(
+                            textDirection:
+                                isUser ? TextDirection.rtl : TextDirection.ltr,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (!isUser) ...[
+                                if (messageDown.userId != message.userId || index == 0)
+                                  const CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        "https://randomuser.me/api/portraits/men/7.jpg"),
+                                    maxRadius: 12,
+                                  )
+                                else
+                                  const SizedBox(width: 24),
+                                const SizedBox(width: 8),
+                              ],
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: !isUser
+                                      ? Colors.grey[800]
+                                      : Colors.blue[400],
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                child: Text(
+                                  message.text.trim(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: Colors.white),
+                                ),
+                              )
                             ],
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                color: !isUser
-                                    ? Colors.grey[800]
-                                    : Colors.blue[400],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              child: Text(
-                                message.text.trim(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: Colors.white),
-                              ),
-                            )
-                          ],
-                        );
-                      });
+                          );
+                        },
+                      );
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(
