@@ -1,13 +1,11 @@
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show HttpHeaders;
-import 'dart:math';
+import 'dart:math' show max, min;
 
 import 'package:flutter/material.dart'
     show
         AppBar,
-        BorderRadius,
         BoxConstraints,
-        BoxDecoration,
         BuildContext,
         CircleAvatar,
         Colors,
@@ -31,15 +29,12 @@ import 'package:flutter/material.dart'
         StatefulWidget,
         StreamBuilder,
         Text,
-        TextDirection,
         TextEditingController,
         TextField,
         TextStyle,
         Theme,
         Widget;
-import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart' show Consumer;
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
 import '../../config.dart';
@@ -47,7 +42,7 @@ import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
-import '../providers/auth_provider.dart';
+import '../widgets/atoms/message_list_item.dart';
 
 class ChatDetailPage extends StatefulWidget {
   const ChatDetailPage({super.key, required this.room});
@@ -140,48 +135,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     padding:
                         const EdgeInsets.only(bottom: 8, left: 12, right: 12),
                     itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final messageDown = messages
-                          .elementAt(max(index - 1, 0));
-                      return Consumer<AuthProvider>(
-                        builder: (context, value, _) {
-                          final isUser = value.user!.uid == message.userId;
-                          return Row(
-                            textDirection:
-                                isUser ? TextDirection.rtl : TextDirection.ltr,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              if (!isUser) ...[
-                                if (messageDown.userId != message.userId || index == 0)
-                                  const CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                        "https://randomuser.me/api/portraits/men/7.jpg"),
-                                    maxRadius: 12,
-                                  )
-                                else
-                                  const SizedBox(width: 24),
-                                const SizedBox(width: 8),
-                              ],
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: !isUser
-                                      ? Colors.grey[800]
-                                      : Colors.blue[400],
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                child: Text(
-                                  message.text.trim(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(color: Colors.white),
-                                ),
-                              )
-                            ],
-                          );
-                        },
+                      final lastIndex = messages.length - 1;
+                      return MessageListItem(
+                        message: messages[index],
+                        messageUp:
+                            messages.elementAt(min(index + 1, lastIndex)),
+                        messageDown: messages.elementAt(max(index - 1, 0)),
+                        index: index,
+                        lastIndex: lastIndex,
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
