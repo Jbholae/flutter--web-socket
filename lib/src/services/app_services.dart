@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../config/api/api.dart';
+import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
 import '../models/user/user.dart';
 import 'app_repo.dart';
@@ -28,5 +29,12 @@ class AppRepoImplementation implements AppRepo {
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
     return dataList;
+  }
+
+  @override
+  Future<List<ChatMessage>> getRoomMessages(int roomId) async {
+    final response = await dio.get("/rooms/messages/$roomId");
+    List data = response.data['data'];
+    return data.map((e) => ChatMessage.fromJson(e)).toList();
   }
 }
