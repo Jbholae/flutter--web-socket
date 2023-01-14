@@ -1,34 +1,31 @@
-
 class ChatMessage {
-  String? id;
-  String? text;
-  String? userRoomId;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  DateTime? deletedAt;
-  String? messageContent;
-  String? messageType;
+  int id;
+  String text;
+  String? userId;
+  int roomId;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
+
   ChatMessage({
-    this.messageContent,
-    this.messageType,
-    this.createdAt,
+    required this.id,
+    required this.text,
+    required this.roomId,
+    this.userId,
     this.deletedAt,
-    this.id,
-    this.text,
     this.updatedAt,
-    this.userRoomId,
+    this.createdAt,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      createdAt: json['created_at'],
-      deletedAt: json['deleted_at'],
-      id: json['id'],
-      messageContent: json['message_content'],
-      messageType: json['message_type'],
-      text: json['text'],
-      updatedAt: json['updated_at'],
-      userRoomId: json['user_room_id'],
+      id: json['id'] as int,
+      text: json['text'] as String,
+      userId: json['user_id'] as String?,
+      roomId: json['room_id'] as int,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      deletedAt: json['deleted_at'] as String?,
     );
   }
 }
