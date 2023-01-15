@@ -19,7 +19,7 @@ import 'package:flutter/material.dart'
         TextDirection,
         Theme,
         Widget;
-import 'package:provider/provider.dart' show Consumer;
+import 'package:provider/provider.dart' show ReadContext;
 
 import '../../models/chat_message_model.dart';
 import '../../providers/auth_provider.dart';
@@ -49,10 +49,11 @@ class MessageListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, value, _) {
-        final isUser = value.user!.uid == message.userId;
-        return Row(
+    final isUser = context.read<AuthProvider>().user!.uid == message.userId;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(
           textDirection: isUser ? TextDirection.rtl : TextDirection.ltr,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -77,21 +78,24 @@ class MessageListItem extends StatelessWidget {
                           topRight: isGroupUpFalse || index == lastIndex
                               ? radius50
                               : radius8,
-                          bottomRight:
-                              isGroupDownTrue && index != 0 ? radius8 : radius50,
+                          bottomRight: isGroupDownTrue && index != 0
+                              ? radius8
+                              : radius50,
                         )
                       : BorderRadius.only(
                           topLeft: isGroupUpFalse || index == lastIndex
                               ? radius50
                               : radius8,
-                          bottomLeft:
-                              isGroupDownTrue && index != 0 ? radius8 : radius50,
+                          bottomLeft: isGroupDownTrue && index != 0
+                              ? radius8
+                              : radius50,
                           bottomRight: radius50,
                           topRight: radius50,
                         ),
                   color: !isUser ? Colors.grey[800] : Colors.blue[400],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   message.text.trim(),
                   style: Theme.of(context)
@@ -103,8 +107,15 @@ class MessageListItem extends StatelessWidget {
             ),
             const SizedBox(width: 48),
           ],
-        );
-      },
+        ),
+        if (isUser && index == 0)
+          Text(
+            message.status,
+            style: Theme.of(context).textTheme.caption?.copyWith(
+              color: Colors.grey[400]
+            ),
+          ),
+      ],
     );
   }
 }

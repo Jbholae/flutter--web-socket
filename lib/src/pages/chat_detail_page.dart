@@ -36,6 +36,7 @@ import 'package:flutter/material.dart'
         Theme,
         Widget;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
@@ -44,6 +45,7 @@ import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/atoms/message_list_item.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -76,11 +78,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
         ws.stream.listen((event) {
           final data = ChatMessage.fromJson(jsonDecode(event));
-          print(data.user.fullName);
-          messageStream.add([
-            data,
-            ...messageStream.value,
-          ]);
+          messageStream.add(
+              messageStream.value.map((e) => e.id == null ? data : e).toList());
         });
       });
     });
@@ -220,9 +219,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         onPressed: () {
                           final text = message.text.trim();
                           if (text != "") {
-                            ws.innerWebSocket!.add(jsonEncode({
-                              "text": message.text.trim(),
-                            }));
+                            final data = ChatMessage(
+                              text: message.text.trim(),
+                              userId: context.read<AuthProvider>().dbUser?.id,
+                              roomId: widget.room.id,
+                              status: 'sending',
+                            );
+                            messageStream.add([
+                              data,
+                              ...messageStream.value,
+                            ]);
+                            ws.innerWebSocket!.add(jsonEncode(data.toJson()));
                             message.clear();
                           }
                         },
