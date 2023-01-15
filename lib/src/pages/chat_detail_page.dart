@@ -58,6 +58,7 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  final ScrollController scrollController = ScrollController();
   late final IOWebSocketChannel ws;
   late final TextEditingController message = TextEditingController();
 
@@ -67,6 +68,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   void initState() {
+    scrollController.addListener(() async {
+      if (scrollController.offset ==
+          scrollController.position.maxScrollExtent) {
+        messageStream.add(
+          messageStream.value + await apiService.getRoomMessages(
+              widget.room.id, messageStream.value.last.createdAt),
+        );
+      }
+    });
     String baseUrl =
         Config.apiUrl.replaceRange(0, Config.apiUrl.indexOf("/") + 2, "");
     firebaseAuth.currentUser?.getIdToken().then((value) {
@@ -89,6 +99,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   void dispose() {
+    scrollController.dispose();
     messageStream.close();
     ws.innerWebSocket?.close();
     super.dispose();
@@ -136,9 +147,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 Expanded(
                   child: ListView.separated(
                     reverse: true,
-                    itemCount: messages.length,
                     padding:
                         const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+                    controller: scrollController,
+                    itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final lastIndex = messages.length - 1;
                       return MessageListItem(

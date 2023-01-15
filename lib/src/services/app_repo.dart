@@ -9,5 +9,5 @@ abstract class AppRepo {
 
   Future getUserRoom();
 
-  Future<List<ChatMessage>> getRoomMessages(int roomId);
+  Future<List<ChatMessage>> getRoomMessages(int roomId, String cursor);
 }
