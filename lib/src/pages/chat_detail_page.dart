@@ -78,8 +78,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
         ws.stream.listen((event) {
           final data = ChatMessage.fromJson(jsonDecode(event));
-          messageStream.add(
-              messageStream.value.map((e) => e.id == null ? data : e).toList());
+          messageStream.add(messageStream.value
+              .map((e) => (e.id == null || e.id == data.id) ? data : e)
+              .toList());
         });
       });
     });
@@ -223,7 +224,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                               text: message.text.trim(),
                               userId: context.read<AuthProvider>().dbUser?.id,
                               roomId: widget.room.id,
-                              status: 'sending',
+                              status: 'Sending',
                             );
                             messageStream.add([
                               data,

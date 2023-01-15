@@ -30,7 +30,7 @@ class ChatMessage {
     return ChatMessage(
       id: json['id'],
       text: json['text'] as String,
-      status: json['status'] ?? "sent",
+      status: json['status'] ?? "Sent",
       userId: json['user_id'] as String,
       roomId: json['room_id'] as int,
       createdAt: json['created_at'] as String?,

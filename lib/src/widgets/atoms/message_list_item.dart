@@ -20,6 +20,7 @@ import 'package:flutter/material.dart'
         Theme,
         Widget;
 import 'package:provider/provider.dart' show ReadContext;
+import 'package:sizer/sizer.dart';
 
 import '../../models/chat_message_model.dart';
 import '../../providers/auth_provider.dart';
@@ -105,7 +106,7 @@ class MessageListItem extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 48),
+            SizedBox(width: 24.w),
           ],
         ),
         if (isUser && index == 0)
