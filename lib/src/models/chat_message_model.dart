@@ -6,11 +6,11 @@ class ChatMessage {
   DateTime? createdAt;
   DateTime? updatedAt;
   DateTime? deletedAt;
-  String? messageContent;
-  String? messageType;
+  // String? messageContent;
+  // String? messageType;
   ChatMessage({
-    this.messageContent,
-    this.messageType,
+    // this.messageContent,
+    // this.messageType,
     this.createdAt,
     this.deletedAt,
     this.id,
@@ -24,8 +24,8 @@ class ChatMessage {
       createdAt: json['created_at'],
       deletedAt: json['deleted_at'],
       id: json['id'],
-      messageContent: json['message_content'],
-      messageType: json['message_type'],
+      // messageContent: json['message_content'],
+      // messageType: json['message_type'],
       text: json['text'],
       updatedAt: json['updated_at'],
       userRoomId: json['user_room_id'],
