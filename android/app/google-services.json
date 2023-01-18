@@ -29,6 +29,13 @@
             {
               "client_id": "233674533239-n1ctt11m5pkp7n7qtuobtppk9t1cko1e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "233674533239-m68csokj12vh0h8652mfsjd56qn9ov0u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.webSocketTest"
+              }
             }
           ]
         }
