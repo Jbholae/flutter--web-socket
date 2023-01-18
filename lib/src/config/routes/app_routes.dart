@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app.dart';
+import '../../models/rooms/chat_room_model.dart';
 import '../../pages/chat_detail_page.dart';
 import '../../pages/home_page.dart';
 import '../../pages/login_user.dart';
@@ -27,7 +28,7 @@ class AppRouter {
           return _materialRoute(const HomePage());
         case "/chat":
           return _materialRoute(
-            ChatDetailPage(name: settings.arguments as String),
+            ChatDetailPage(chatData: ChatRoom()),
           );
       }
     }

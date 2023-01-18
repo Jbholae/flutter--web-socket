@@ -114,9 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatDetailPage(
-                          name: chatUsers[index].name!,
-                        ),
+                        builder: (context) => const ChatDetailPage(),
                       ),
                     );
                   },
