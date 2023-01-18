@@ -4,6 +4,7 @@ import '../app.dart';
 import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/rooms/chat_room_model.dart';
+import 'chat_detail_page.dart';
 
 class RoomsScreen extends StatefulWidget {
   const RoomsScreen({super.key});
@@ -46,10 +47,18 @@ class _RoomsScreenState extends State<RoomsScreen> {
                                 maxRadius: 20,
                               ),
                               onTap: () {
-                                mainNavigator.currentState?.pushNamed(
-                                  "/chat",
-                                  arguments: index.toString(),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatDetailPage(
+                                      chatData: chatData,
+                                    ),
+                                  ),
                                 );
+                                // mainNavigator.currentState?.pushNamed(
+                                //   "/chat",
+                                //   arguments: chatData,
+                                // );
                               },
                             );
                           },
@@ -61,7 +70,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                   return Text(snapshot.error.toString());
                 }
               }
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             }),
       ),
       floatingActionButton: FloatingActionButton(
