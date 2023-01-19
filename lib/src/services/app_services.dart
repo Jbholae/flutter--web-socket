@@ -29,7 +29,7 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
+  Future<List<ChatRoom>> getUserRoom({DateTime? cursor}) async {
     cursor == "" ? DateTime.now().toIso8601String() : cursor;
     final response = await dio.get("/rooms/get-rooms/$cursor");
     List data = response.data['data'];
@@ -47,5 +47,12 @@ class AppRepoImplementation implements AppRepo {
     List<ChatMessage> messageList =
         data.map((e) => ChatMessage.fromJson(e)).toList();
     return messageList;
+  }
+
+  @override
+  Future createUserMessage({int? roomId, ChatMessage? chatMessage}) async {
+    final response = await dio.post("/rooms/create-message/$roomId",
+        data: chatMessage?.toJson());
+    return response;
   }
 }
