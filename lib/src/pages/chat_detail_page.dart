@@ -159,49 +159,74 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
       body: Stack(
         children: <Widget>[
-          StreamBuilder(
-            stream: channel!.stream,
+          // StreamBuilder(
+          //   stream: channel!.stream,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       return Text(snapshot.data);
+          //     } else if (snapshot.hasError) {
+          //       return Text(snapshot.error.toString());
+          //     }
+          //     return const Center(
+          //       child: CircularProgressIndicator(),
+          //     );
+          //   },
+          // ),
+          FutureBuilder<List<ChatMessage>>(
+            future: apiService.getUserMessage(roomId: id),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  var data = snapshot.data;
+                  return data!.isEmpty
+                      ? const Center(
+                          child: Text('Start a conversation !!!'),
+                        )
+                      : ListView.builder(
+                          itemCount: data.length,
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.only(top: 10, bottom: 10),
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Container(
+                              padding: const EdgeInsets.only(
+                                  left: 14, right: 14, top: 10, bottom: 10),
+                              child: Align(
+                                // alignment: (messages[index].messageType == "receiver"
+                                alignment: (data[index].userId !=
+                                        firebaseAuth.currentUser!.uid
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    // color: (messages[index].messageType == "receiver"
+                                    color: (data[index].userId !=
+                                            firebaseAuth.currentUser!.uid
+                                        ? Colors.grey.shade200
+                                        : Colors.blue[200]),
+                                  ),
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    data[index].text!,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                }
               }
               return const Center(
                 child: CircularProgressIndicator(),
               );
             },
           ),
-          // ListView.builder(
-          //   itemCount: messages.length,
-          //   shrinkWrap: true,
-          //   padding: const EdgeInsets.only(top: 10, bottom: 10),
-          //   physics: const NeverScrollableScrollPhysics(),
-          //   itemBuilder: (context, index) {
-          //     return Container(
-          //       padding: const EdgeInsets.only(
-          //           left: 14, right: 14, top: 10, bottom: 10),
-          //       child: Align(
-          //         alignment: (messages[index].messageType == "receiver"
-          //             ? Alignment.topLeft
-          //             : Alignment.topRight),
-          //         child: Container(
-          //           decoration: BoxDecoration(
-          //             borderRadius: BorderRadius.circular(20),
-          //             color: (messages[index].messageType == "receiver"
-          //                 ? Colors.grey.shade200
-          //                 : Colors.blue[200]),
-          //           ),
-          //           padding: const EdgeInsets.all(16),
-          //           child: Text(
-          //             messages[index].messageContent!,
-          //             style: const TextStyle(fontSize: 15),
-          //           ),
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -250,11 +275,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     width: 15,
                   ),
                   FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       channel!.innerWebSocket?.add(messageController.text
                           // formKey.currentState?.value['message'],
                           );
+                      await apiService.createUserMessage(
+                          roomId: widget.chatData?.id,
+                          chatMessage:
+                              ChatMessage(text: messageController.text));
                       messageController.clear();
+                      await apiService.getUserMessage(
+                          roomId: widget.chatData?.id);
                     },
                     backgroundColor: Colors.blue,
                     elevation: 0,
