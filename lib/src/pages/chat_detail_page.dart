@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_test/src/config/api/api.dart';
 import 'package:web_socket_test/src/models/rooms/chat_room_model.dart';
 
 import '../../config.dart';
@@ -30,73 +32,44 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   int? id = 0;
   var token = sharedPreferences.getString('token');
 
-  // final int id = 0;
-  // List<ChatMessage> messages = [
-  //   ChatMessage(
-  //     messageContent: "Hello, Will",
-  //     messageType: "receiver",
-  //   ),
-  //   ChatMessage(
-  //     messageContent: "How have you been?",
-  //     messageType: "receiver",
-  //   ),
-  //   ChatMessage(
-  //     messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-  //     messageType: "sender",
-  //   ),
-  //   ChatMessage(
-  //     messageContent: "ehhhh, doing OK.",
-  //     messageType: "receiver",
-  //   ),
-  //   ChatMessage(
-  //     messageContent: "Is there any thing wrong?",
-  //     messageType: "sender",
-  //   ),
-  // ];
-
   IOWebSocketChannel? channel;
 
-  // @override
-  // void initState() {
-  //   setState(() {
-  //     (() async {
-  //       channel = IOWebSocketChannel.connect(
-  //         "${Config.socketUrl}/rooms/chat/${widget.chatData?.id}",
-  //         headers: {
-  //           HttpHeaders.authorizationHeader:
-  //               'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
-  //         },
-  //       );
-  //       channel.stream.listen((event) {
-  //         print(event);
-  //       }, onError: (error) {
-  //         print("Error : $error");
-  //       });
-  //     })();
-  //   });
-
-  //   super.initState();
-  // }
   @override
   void initState() {
     id = widget.chatData!.id;
-    channel = IOWebSocketChannel.connect(
-      "${Config.socketUrl}/rooms/chat/$id",
-      headers: {
-        HttpHeaders.authorizationHeader: 'Bearer $token',
-      },
-    );
+
+    setState(() {
+      (() async {
+        channel = IOWebSocketChannel.connect(
+          "${Config.socketUrl}/rooms/chat/${widget.chatData?.id}",
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
+          },
+        );
+        channel!.stream.listen((event) {
+          print(event);
+        }, onError: (error) {
+          print("Error : $error");
+        });
+      })();
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
-    channel!.innerWebSocket?.close();
+    channel?.innerWebSocket?.close();
     super.dispose();
   }
 
+  var cursor = "";
+
   @override
   Widget build(BuildContext context) {
+    cursor == "" ? DateTime.now().toIso8601String() : cursor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -157,76 +130,125 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
         ),
       ),
-      body: Stack(
+      body: Column(
         children: <Widget>[
-          // StreamBuilder(
-          //   stream: channel!.stream,
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return Text(snapshot.data);
-          //     } else if (snapshot.hasError) {
-          //       return Text(snapshot.error.toString());
-          //     }
-          //     return const Center(
-          //       child: CircularProgressIndicator(),
-          //     );
-          //   },
-          // ),
-          FutureBuilder<List<ChatMessage>>(
-            future: apiService.getUserMessage(roomId: id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  var data = snapshot.data;
-                  return data!.isEmpty
-                      ? const Center(
-                          child: Text('Start a conversation !!!'),
-                        )
-                      : ListView.builder(
-                          itemCount: data.length,
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.only(top: 10, bottom: 10),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              padding: const EdgeInsets.only(
-                                  left: 14, right: 14, top: 10, bottom: 10),
-                              child: Align(
-                                // alignment: (messages[index].messageType == "receiver"
-                                alignment: (data[index].userId !=
-                                        firebaseAuth.currentUser!.uid
-                                    ? Alignment.topLeft
-                                    : Alignment.topRight),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    // color: (messages[index].messageType == "receiver"
-                                    color: (data[index].userId !=
-                                            firebaseAuth.currentUser!.uid
-                                        ? Colors.grey.shade200
-                                        : Colors.blue[200]),
-                                  ),
-                                  padding: const EdgeInsets.all(16),
-                                  child: Text(
-                                    data[index].text!,
-                                    style: const TextStyle(fontSize: 15),
+          Expanded(
+            child: StreamBuilder<List<ChatMessage>>(
+              stream: apiService.getUserMessage(roomId: id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    var data = snapshot.data;
+                    return data!.isEmpty
+                        ? const Center(
+                            child: Text('Start a conversation !!!'),
+                          )
+                        : ListView.builder(
+                            reverse: true,
+                            itemCount: data.length,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(
+                              top: 10,
+                              bottom: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding: const EdgeInsets.only(
+                                    left: 14, right: 14, top: 10, bottom: 10),
+                                child: Align(
+                                  // alignment: (messages[index].messageType == "receiver"
+                                  alignment: (data[index].userId !=
+                                          firebaseAuth.currentUser!.uid
+                                      ? Alignment.topLeft
+                                      : Alignment.topRight),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      // color: (messages[index].messageType == "receiver"
+                                      color: (data[index].userId !=
+                                              firebaseAuth.currentUser!.uid
+                                          ? Colors.grey.shade200
+                                          : Colors.blue[200]),
+                                    ),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      data[index].text!,
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(snapshot.error.toString()),
-                  );
+                              );
+                            },
+                          );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  }
                 }
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
           ),
+          // Flexible(
+          //   child: FutureBuilder<List<ChatMessage>>(
+          //     future: apiService.getUserMessage(roomId: id),
+          //     builder: (context, snapshot) {
+          //       if (snapshot.connectionState == ConnectionState.done) {
+          //         if (snapshot.hasData) {
+          //           var data = snapshot.data;
+          //           return data!.isEmpty
+          //               ? const Center(
+          //                   child: Text('Start a conversation !!!'),
+          //                 )
+          //               : ListView.builder(
+          //                   itemCount: data.length,
+          //                   shrinkWrap: true,
+          //                   padding: const EdgeInsets.only(top: 10, bottom: 10),
+          //                   // physics: const NeverScrollableScrollPhysics(),
+          //                   itemBuilder: (context, index) {
+          //                     return Container(
+          //                       padding: const EdgeInsets.only(
+          //                           left: 14, right: 14, top: 10, bottom: 10),
+          //                       child: Align(
+          //                         // alignment: (messages[index].messageType == "receiver"
+          //                         alignment: (data[index].userId !=
+          //                                 firebaseAuth.currentUser!.uid
+          //                             ? Alignment.topLeft
+          //                             : Alignment.topRight),
+          //                         child: Container(
+          //                           decoration: BoxDecoration(
+          //                             borderRadius: BorderRadius.circular(20),
+          //                             // color: (messages[index].messageType == "receiver"
+          //                             color: (data[index].userId !=
+          //                                     firebaseAuth.currentUser!.uid
+          //                                 ? Colors.grey.shade200
+          //                                 : Colors.blue[200]),
+          //                           ),
+          //                           padding: const EdgeInsets.all(16),
+          //                           child: Text(
+          //                             data[index].text!,
+          //                             style: const TextStyle(fontSize: 15),
+          //                           ),
+          //                         ),
+          //                       ),
+          //                     );
+          //                   },
+          //                 );
+          //         } else if (snapshot.hasError) {
+          //           return Center(
+          //             child: Text(snapshot.error.toString()),
+          //           );
+          //         }
+          //       }
+          //       return const Center(
+          //         child: CircularProgressIndicator(),
+          //       );
+          //     },
+          //   ),
+          // ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -276,16 +298,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   ),
                   FloatingActionButton(
                     onPressed: () async {
-                      channel!.innerWebSocket?.add(messageController.text
-                          // formKey.currentState?.value['message'],
-                          );
+                      setState(() {});
+                      channel?.innerWebSocket?.add(messageController.text);
                       await apiService.createUserMessage(
                           roomId: widget.chatData?.id,
                           chatMessage:
                               ChatMessage(text: messageController.text));
                       messageController.clear();
-                      await apiService.getUserMessage(
-                          roomId: widget.chatData?.id);
                     },
                     backgroundColor: Colors.blue,
                     elevation: 0,
