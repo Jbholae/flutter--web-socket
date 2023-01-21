@@ -38,15 +38,15 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<ChatMessage>> getUserMessage(
-      {int? roomId, String? cursor}) async {
+  Stream<List<ChatMessage>> getUserMessage({int? roomId}) async* {
+    var cursor = DateTime.now().toIso8601String();
     cursor == "" ? DateTime.now().toIso8601String() : cursor;
 
     final response = await dio.get("/rooms/messages/$roomId/$cursor");
     List data = response.data['data'];
     List<ChatMessage> messageList =
         data.map((e) => ChatMessage.fromJson(e)).toList();
-    return messageList;
+    yield messageList;
   }
 
   @override
