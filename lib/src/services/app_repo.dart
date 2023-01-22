@@ -5,6 +5,8 @@ import '../models/user/user.dart';
 abstract class AppRepo {
   Future createUser({required User data});
 
+  Future getAllUser();
+
   Future createRoom({ChatRoom? request});
 
   Future getUserRoom({DateTime? cursor});

@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_test/src/config/firebase/auth.dart';
 
-import '../../config.dart';
 import '../config/api/api.dart';
 import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
+import '../models/user/get_all_user_response.dart/get_all_user_response.dart';
 import '../models/user/user.dart';
 import 'app_repo.dart';
 
@@ -54,5 +50,14 @@ class AppRepoImplementation implements AppRepo {
     final response = await dio.post("/rooms/create-message/$roomId",
         data: chatMessage?.toJson());
     return response;
+  }
+
+  @override
+  Future<List<GetAllUserResponseData>> getAllUser() async {
+    final response = await dio.get('/users/get-all');
+    List data = response.data['data'];
+    List<GetAllUserResponseData> userList =
+        data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
+    return userList;
   }
 }
