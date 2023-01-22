@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_test/src/pages/all_user_screen.dart';
 
 import 'register_user.dart';
 import 'rooms.dart';
@@ -12,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     _callPage(int current) {
@@ -21,6 +22,8 @@ class _HomePageState extends State<HomePage> {
           return const RoomsScreen();
         case 1:
           return const RegisterUser();
+        case 2:
+          return const AllUserScreen();
         default:
       }
     }
@@ -47,6 +50,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box),
             label: "Profile",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_add_rounded),
+            label: "Friends",
           ),
         ],
       ),
