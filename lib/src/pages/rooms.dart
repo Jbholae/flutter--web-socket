@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../app.dart';
 import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/rooms/chat_room_model.dart';

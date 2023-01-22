@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_test/src/pages/all_user_screen.dart';
 
+import 'all_user_screen.dart';
 import 'register_user.dart';
 import 'rooms.dart';
 
