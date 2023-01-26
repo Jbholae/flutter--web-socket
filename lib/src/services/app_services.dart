@@ -8,6 +8,8 @@ import '../models/user/user.dart';
 import 'app_repo.dart';
 
 class AppRepoImplementation implements AppRepo {
+  var cursor = DateTime.now().toUtc().toIso8601String();
+
   @override
   Future<Response> createUser({required User data}) {
     return dio.post(
@@ -25,8 +27,10 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<ChatRoom>> getUserRoom({DateTime? cursor}) async {
-    cursor == "" ? DateTime.now().toIso8601String() : cursor;
+  Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
+    var cursor = DateTime.now().toUtc().toIso8601String();
+
+    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
     final response = await dio.get("/rooms/get-rooms/$cursor");
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
@@ -35,8 +39,9 @@ class AppRepoImplementation implements AppRepo {
 
   @override
   Stream<List<ChatMessage>> getUserMessage({int? roomId}) async* {
-    var cursor = DateTime.now().toIso8601String();
-    cursor == "" ? DateTime.now().toIso8601String() : cursor;
+    var cursor = DateTime.now().toUtc().toIso8601String();
+
+    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
 
     final response = await dio.get("/rooms/messages/$roomId/$cursor");
     List data = response.data['data'];
@@ -53,8 +58,11 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<GetAllUserResponseData>> getAllUser() async {
-    final response = await dio.get('/users/get-all');
+  Future<List<GetAllUserResponseData>> getAllUser(
+      {String? keyword, String? cursor}) async {
+    String cursor = DateTime.now().toUtc().toIso8601String();
+    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
+    final response = await dio.get('/users/get-all/$cursor?keyword=$keyword');
     List data = response.data['data'];
     List<GetAllUserResponseData> userList =
         data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
