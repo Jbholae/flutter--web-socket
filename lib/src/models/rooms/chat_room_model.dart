@@ -2,6 +2,7 @@ class ChatRoom {
   int? id;
   String? name;
   int? ownerId;
+  bool? isPrivate;
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
@@ -13,6 +14,7 @@ class ChatRoom {
     this.ownerId,
     this.name,
     this.updatedAt,
+    this.isPrivate,
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class ChatRoom {
       name: json['name'],
       ownerId: json['owner_id'],
       updatedAt: json['updated_at'],
+      isPrivate: json['is_private'],
     );
   }
 
@@ -34,6 +37,7 @@ class ChatRoom {
     data['id'] = id;
     data['name'] = name;
     data['owner_id'] = ownerId;
+    data['is_private'] = isPrivate;
     return data;
   }
 }
