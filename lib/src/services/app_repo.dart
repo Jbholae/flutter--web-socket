@@ -5,11 +5,11 @@ import '../models/user/user.dart';
 abstract class AppRepo {
   Future createUser({required User data});
 
-  Future getAllUser();
+  Future getAllUser({String keyword, String cursor});
 
   Future createRoom({ChatRoom? request});
 
-  Future getUserRoom({DateTime? cursor});
+  Future getUserRoom({String? cursor});
 
   Future createUserMessage({int? roomId, ChatMessage? chatMessage});
 
