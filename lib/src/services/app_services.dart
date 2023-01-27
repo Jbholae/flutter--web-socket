@@ -68,4 +68,14 @@ class AppRepoImplementation implements AppRepo {
         data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
     return userList;
   }
+
+  @override
+  Future followUser({String? userId}) async {
+    return await dio.patch("/followers/add/$userId");
+  }
+
+  @override
+  Future unFollowUser({String? userID}) async {
+    return await dio.delete('/followers/delete/$userID');
+  }
 }
