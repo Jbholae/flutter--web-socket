@@ -39,6 +39,21 @@ class _RegisterUserState extends State<RegisterUser> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                firebaseAuth.currentUser != null
+                    ? Center(
+                        child: Column(
+                          children: [
+                            Text("${firebaseAuth.currentUser?.displayName}"),
+                            IconButton(
+                              onPressed: () {
+                                firebaseAuth.signOut();
+                              },
+                              icon: const Icon(Icons.power_settings_new),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(),
                 const Center(
                   child: Text("Register Screen"),
                 ),
