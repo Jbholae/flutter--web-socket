@@ -57,8 +57,6 @@ class _AllUserScreenState extends State<AllUserScreen> {
                     setState(() {
                       userData = apiService.getAllUser(keyword: value);
                     });
-                    print("text : ${searchController.text}");
-                    print("text : ${value}");
                   },
                 ),
               ),
@@ -86,7 +84,16 @@ class _AllUserScreenState extends State<AllUserScreen> {
                                     ),
                                     title: Text(data[index].fullName!),
                                     subtitle: Text(data[index].email!),
-                                    trailing: Text('Add'),
+                                    trailing: IconButton(
+                                        onPressed: () {
+                                          apiService.followUser(
+                                            userId: data[index].id!,
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.add,
+                                          color: Colors.blue,
+                                        )),
                                   );
                                 },
                               );
