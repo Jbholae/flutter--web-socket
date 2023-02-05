@@ -2,6 +2,7 @@ import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show HttpHeaders;
 import 'dart:math' show max, min;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
     show
@@ -41,6 +42,8 @@ import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
 import '../../config.dart';
+import '../config/api/api.dart';
+import '../config/api/interceptors.dart';
 import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
@@ -72,27 +75,30 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       if (scrollController.offset ==
           scrollController.position.maxScrollExtent) {
         messageStream.add(
-          messageStream.value + await apiService.getRoomMessages(
-              widget.room.id, messageStream.value.last.createdAt),
+          messageStream.value +
+              await apiService.getRoomMessages(
+                  widget.room.id, messageStream.value.last.createdAt),
         );
       }
     });
     String baseUrl =
         Config.apiUrl.replaceRange(0, Config.apiUrl.indexOf("/") + 2, "");
-    firebaseAuth.currentUser?.getIdToken().then((value) {
-      setState(() {
-        ws = IOWebSocketChannel.connect(
-          'ws://$baseUrl/rooms/chat/${widget.room.id}',
-          headers: {HttpHeaders.authorizationHeader: "Bearer $value"},
-        );
 
-        ws.stream.listen((event) {
-          final data = ChatMessage.fromJson(jsonDecode(event));
-          messageStream.add(messageStream.value
-              .map((e) => (e.id == null || e.id == data.id) ? data : e)
-              .toList());
-        });
-      });
+      setState(() {
+        (() async {
+          ws = IOWebSocketChannel.connect(
+            'ws://$baseUrl/rooms/chat/${widget.room.id}',
+            headers: {HttpHeaders.authorizationHeader: "Bearer ${await firebaseAuth.currentUser?.getIdToken()}"},
+          );
+
+          ws.stream.listen((event) {
+            final data = ChatMessage.fromJson(jsonDecode(event));
+            messageStream.add(messageStream.value
+                .map((e) => (e.id == null || e.id == data.id) ? data : e)
+                .toList());
+          });
+
+        })();
     });
     super.initState();
   }
