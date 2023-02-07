@@ -84,16 +84,30 @@ class _AllUserScreenState extends State<AllUserScreen> {
                                     ),
                                     title: Text(data[index].fullName!),
                                     subtitle: Text(data[index].email!),
-                                    trailing: IconButton(
-                                        onPressed: () {
-                                          apiService.followUser(
-                                            userId: data[index].id!,
-                                          );
-                                        },
-                                        icon: const Icon(
-                                          Icons.add,
-                                          color: Colors.blue,
-                                        )),
+                                    trailing: data[index].followStatus == true
+                                        ? IconButton(
+                                            onPressed: () {
+                                              apiService.unFollowUser(
+                                                userID: data[index].id!,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.close,
+                                              color: Colors.red,
+                                            ),
+                                          )
+                                        : IconButton(
+                                            onPressed: () {
+                                              apiService.followUser(
+                                                // userID: data[index].id
+                                                userId: data[index].id!,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.add,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
                                   );
                                 },
                               );
