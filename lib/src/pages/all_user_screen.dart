@@ -16,17 +16,16 @@ class AllUserScreen extends StatefulWidget {
 class _AllUserScreenState extends State<AllUserScreen> {
   TextEditingController searchController = TextEditingController();
 
-  Future<List<GetAllUserResponseData>>? userData;
+  Stream<List<GetAllUserResponseData>> userData =
+      apiService.getAllUser(keyword: "").asStream().asBroadcastStream();
 
-  @override
-  void initState() {
-    loadData(searchController.text);
-    super.initState();
-  }
-
-  loadData(String? keyword) async {
-    userData = apiService.getAllUser(keyword: keyword);
-    return userData;
+  loadData() async {
+    setState(() {
+      userData = apiService
+          .getAllUser(keyword: searchController.text)
+          .asStream()
+          .asBroadcastStream();
+    });
   }
 
   @override
@@ -35,36 +34,30 @@ class _AllUserScreenState extends State<AllUserScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Flexible(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: FormBuilderTextField(
-                  textInputAction: TextInputAction.search,
-                  name: "search",
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search for users",
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        searchController.clear();
-                      },
-                      icon: const Icon(Icons.close),
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: FormBuilderTextField(
+                name: "search",
+                textInputAction: TextInputAction.search,
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: "Search for users",
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      searchController.clear();
+                      loadData();
+                    },
+                    icon: const Icon(Icons.close),
                   ),
-                  onChanged: (value) {
-                    loadData(value!);
-                    setState(() {
-                      userData = apiService.getAllUser(keyword: value);
-                    });
-                  },
                 ),
+                onEditingComplete: () {
+                  loadData();
+                },
               ),
             ),
-            Flexible(
-              flex: 10,
-              child: FutureBuilder<List<GetAllUserResponseData>>(
-                  future: userData,
+            Expanded(
+              child: StreamBuilder<List<GetAllUserResponseData>>(
+                  stream: userData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
@@ -107,7 +100,7 @@ class _AllUserScreenState extends State<AllUserScreen> {
                                               Icons.add,
                                               color: Colors.blue,
                                             ),
-                                          ),
+                                    ),
                                   );
                                 },
                               );
