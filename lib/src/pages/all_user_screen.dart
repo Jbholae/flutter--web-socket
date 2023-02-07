@@ -77,26 +77,25 @@ class _AllUserScreenState extends State<AllUserScreen> {
                                     ),
                                     title: Text(data[index].fullName!),
                                     subtitle: Text(data[index].email!),
-                                    trailing: data[index].followStatus == true
-                                        ? IconButton(
-                                            onPressed: () {
-                                              apiService.unFollowUser(
-                                                userID: data[index].id!,
-                                              );
-                                            },
-                                            icon: const Icon(
+                                    trailing: IconButton(
+                                      onPressed: () async {
+                                        if (data[index].followStatus == true) {
+                                          await apiService.unFollowUser(
+                                            userID: data[index].id!,
+                                          );
+                                        } else {
+                                          await apiService.followUser(
+                                            userId: data[index].id!,
+                                          );
+                                        }
+                                        loadData();
+                                      },
+                                      icon: data[index].followStatus == true
+                                          ? const Icon(
                                               Icons.close,
                                               color: Colors.red,
-                                            ),
-                                          )
-                                        : IconButton(
-                                            onPressed: () {
-                                              apiService.followUser(
-                                                // userID: data[index].id
-                                                userId: data[index].id!,
-                                              );
-                                            },
-                                            icon: const Icon(
+                                            )
+                                          : const Icon(
                                               Icons.add,
                                               color: Colors.blue,
                                             ),
