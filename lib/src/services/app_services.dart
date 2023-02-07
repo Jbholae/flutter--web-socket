@@ -49,9 +49,11 @@ class AppRepoImplementation implements AppRepo {
   @override
   Future<List<GetAllUserResponseData>> getAllUser(
       {String? keyword, String? cursor}) async {
-    String cursor = DateTime.now().toUtc().toIso8601String();
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-    final response = await dio.get('/users/get-all?$cursor?keyword=$keyword');
+    final response = await dio.get('/users/get-all', queryParameters: {
+      "keyword": keyword,
+      "cursor": cursor
+    });
     List data = response.data['data'];
     List<GetAllUserResponseData> userList =
         data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
