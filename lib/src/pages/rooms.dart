@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/rooms/chat_room_model.dart';
 import 'chat_detail_page.dart';
@@ -14,8 +13,6 @@ class RoomsScreen extends StatefulWidget {
 
 class _RoomsScreenState extends State<RoomsScreen> {
   Future<List<ChatRoom>> myFuture = apiService.getUserRoom();
-
-  TextEditingController roomNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -71,71 +68,6 @@ class _RoomsScreenState extends State<RoomsScreen> {
               }
               return const Center(child: CircularProgressIndicator());
             }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Flexible(
-                        child: TextField(
-                          controller: roomNameController,
-                          decoration: const InputDecoration(
-                            label: Text('Room Name'),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton.icon(
-                              style: const ButtonStyle(
-                                backgroundColor:
-                                    MaterialStatePropertyAll(Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.cancel_sharp,
-                              ),
-                              label: const Text('Cancel'),
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                final response = await apiService.createRoom(
-                                  request: ChatRoom(
-                                    name: roomNameController.text,
-                                  ),
-                                );
-                                Navigator.pop(context);
-                                showSuccess(message: response.data['msg']);
-                                setState(() {
-                                  myFuture = apiService.getUserRoom();
-                                });
-                              },
-                              icon: const Icon(Icons.add),
-                              label: const Text('Confirm'),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              });
-        },
-        child: const Icon(
-          Icons.add_outlined,
-          size: 35,
-        ),
       ),
     );
   }

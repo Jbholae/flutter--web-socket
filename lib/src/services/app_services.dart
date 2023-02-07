@@ -19,14 +19,6 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future createRoom({ChatRoom? request}) async {
-    return await dio.post(
-      "/rooms/create",
-      data: request!.toJson(),
-    );
-  }
-
-  @override
   Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
     var cursor = DateTime.now().toUtc().toIso8601String();
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
@@ -53,13 +45,6 @@ class AppRepoImplementation implements AppRepo {
         data.map((e) => ChatMessage.fromJson(e)).toList();
     yield messageList;
   }
-
-  // @override
-  // Future createUserMessage({int? roomId, ChatMessage? chatMessage}) async {
-  //   final response = await dio.post("/rooms/create-message/$roomId",
-  //       data: chatMessage?.toJson());
-  //   return response;
-  // }
 
   @override
   Future<List<GetAllUserResponseData>> getAllUser(
