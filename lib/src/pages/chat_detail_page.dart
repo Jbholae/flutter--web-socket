@@ -1,47 +1,41 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_test/src/config/api/api.dart';
-import 'package:web_socket_test/src/models/rooms/chat_room_model.dart';
 
+import '../models/rooms/chat_room_model.dart';
 import '../../config.dart';
 import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
+import '../providers/auth_provider.dart';
 
 class ChatDetailPage extends StatefulWidget {
   const ChatDetailPage({
     super.key,
-    this.chatData,
+    required this.chatData,
   });
 
-  final ChatRoom? chatData;
+  final ChatRoom chatData;
 
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState();
+  State<ChatDetailPage> createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final formKey = GlobalKey<FormBuilderState>();
   final messageController = TextEditingController();
-  int? id = 0;
-  var token = sharedPreferences.getString('token');
-
   IOWebSocketChannel? channel;
 
   @override
   void initState() {
-    id = widget.chatData!.id;
-
     setState(() {
       (() async {
         channel = IOWebSocketChannel.connect(
-          "${Config.socketUrl}/rooms/chat/${widget.chatData?.id}",
+          "${Config.socketUrl}/rooms/chat/${widget.chatData.id}",
           headers: {
             HttpHeaders.authorizationHeader:
                 'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
@@ -64,77 +58,51 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     super.dispose();
   }
 
-  var cursor = "";
-
   @override
   Widget build(BuildContext context) {
-    cursor == "" ? DateTime.now().toIso8601String() : cursor;
-
+    final uid = context.read<AuthProvider>().dbUser?.id;
+    var chatUser =
+        widget.chatData.users!.firstWhere((element) => element.id != uid);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: false,
+        titleSpacing: 0,
         backgroundColor: Colors.white,
-        flexibleSpace: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.only(right: 16),
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
+        title: Row(
+          children: [
+            const CircleAvatar(
+              backgroundImage:
+                  NetworkImage("https://randomuser.me/api/portraits/men/5.jpg"),
+              maxRadius: 18,
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  chatUser.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(
-                  width: 2,
-                ),
-                const CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://randomuser.me/api/portraits/men/5.jpg"),
-                  maxRadius: 20,
-                ),
-                const SizedBox(
-                  width: 12,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "${widget.chatData?.name}",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Text(
-                        "Online",
-                        style: TextStyle(
-                            color: Colors.grey.shade600, fontSize: 13),
-                      ),
-                    ],
+                Text(
+                  "Online",
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
                   ),
-                ),
-                const Icon(
-                  Icons.settings,
-                  color: Colors.black54,
                 ),
               ],
-            ),
-          ),
+            )
+          ],
         ),
       ),
       body: Column(
         children: <Widget>[
           Expanded(
             child: StreamBuilder<List<ChatMessage>>(
-              stream: apiService.getUserMessage(roomId: id),
+              stream: apiService.getUserMessage(roomId: widget.chatData.id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {

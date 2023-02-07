@@ -28,7 +28,7 @@ class AppRouter {
           return _materialRoute(const HomePage());
         case "/chat":
           return _materialRoute(
-            ChatDetailPage(chatData: ChatRoom()),
+            ChatDetailPage(chatData: settings.arguments as ChatRoom),
           );
       }
     }
