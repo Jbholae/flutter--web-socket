@@ -31,7 +31,7 @@ class AppRepoImplementation implements AppRepo {
     var cursor = DateTime.now().toUtc().toIso8601String();
 
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-    final response = await dio.get("/rooms/get-rooms/$cursor");
+    final response = await dio.get("/rooms/get-rooms?$cursor");
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
     return dataList;
@@ -43,26 +43,26 @@ class AppRepoImplementation implements AppRepo {
 
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
 
-    final response = await dio.get("/rooms/messages/$roomId/$cursor");
+    final response = await dio.get("/rooms/messages/$roomId?$cursor");
     List data = response.data['data'];
     List<ChatMessage> messageList =
         data.map((e) => ChatMessage.fromJson(e)).toList();
     yield messageList;
   }
 
-  @override
-  Future createUserMessage({int? roomId, ChatMessage? chatMessage}) async {
-    final response = await dio.post("/rooms/create-message/$roomId",
-        data: chatMessage?.toJson());
-    return response;
-  }
+  // @override
+  // Future createUserMessage({int? roomId, ChatMessage? chatMessage}) async {
+  //   final response = await dio.post("/rooms/create-message/$roomId",
+  //       data: chatMessage?.toJson());
+  //   return response;
+  // }
 
   @override
   Future<List<GetAllUserResponseData>> getAllUser(
       {String? keyword, String? cursor}) async {
     String cursor = DateTime.now().toUtc().toIso8601String();
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-    final response = await dio.get('/users/get-all/$cursor?keyword=$keyword');
+    final response = await dio.get('/users/get-all?$cursor?keyword=$keyword');
     List data = response.data['data'];
     List<GetAllUserResponseData> userList =
         data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
