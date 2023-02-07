@@ -300,10 +300,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     onPressed: () async {
                       setState(() {});
                       channel?.innerWebSocket?.add(messageController.text);
-                      await apiService.createUserMessage(
-                          roomId: widget.chatData?.id,
-                          chatMessage:
-                              ChatMessage(text: messageController.text));
+                      // await apiService.createUserMessage(
+                      //     roomId: widget.chatData?.id,
+                      //     chatMessage:
+                      //         ChatMessage(text: messageController.text));
                       messageController.clear();
                     },
                     backgroundColor: Colors.blue,
