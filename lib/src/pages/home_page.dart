@@ -14,25 +14,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
+  _callPage(int current) {
+    switch (current) {
+      case 0:
+        return const RoomsScreen();
+      case 1:
+        return const RegisterUser();
+      case 2:
+        return const AllUserScreen();
+      default:
+    }
+  }
+
+  void onTapped(int index) {
+    _currentIndex = index;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    _callPage(int current) {
-      switch (current) {
-        case 0:
-          return const RoomsScreen();
-        case 1:
-          return const RegisterUser();
-        case 2:
-          return const AllUserScreen();
-        default:
-      }
-    }
-
-    void onTapped(int index) {
-      _currentIndex = index;
-      setState(() {});
-    }
-
     return Scaffold(
       body: _callPage(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(
