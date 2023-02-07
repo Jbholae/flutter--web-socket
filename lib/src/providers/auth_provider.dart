@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart' show ChangeNotifier, ModalRoute;
 
 import '../app.dart';
@@ -36,7 +34,7 @@ class AuthProvider with ChangeNotifier {
         _loggedIn = true;
         _dbUser = User.fromJson({
           "id": user.uid,
-          "name": user.displayName,
+          "full_name": user.displayName,
           "email": user.email,
         });
       } else {

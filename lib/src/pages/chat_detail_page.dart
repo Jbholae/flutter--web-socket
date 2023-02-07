@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -160,63 +161,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               },
             ),
           ),
-          // Flexible(
-          //   child: FutureBuilder<List<ChatMessage>>(
-          //     future: apiService.getUserMessage(roomId: id),
-          //     builder: (context, snapshot) {
-          //       if (snapshot.connectionState == ConnectionState.done) {
-          //         if (snapshot.hasData) {
-          //           var data = snapshot.data;
-          //           return data!.isEmpty
-          //               ? const Center(
-          //                   child: Text('Start a conversation !!!'),
-          //                 )
-          //               : ListView.builder(
-          //                   itemCount: data.length,
-          //                   shrinkWrap: true,
-          //                   padding: const EdgeInsets.only(top: 10, bottom: 10),
-          //                   // physics: const NeverScrollableScrollPhysics(),
-          //                   itemBuilder: (context, index) {
-          //                     return Container(
-          //                       padding: const EdgeInsets.only(
-          //                           left: 14, right: 14, top: 10, bottom: 10),
-          //                       child: Align(
-          //                         // alignment: (messages[index].messageType == "receiver"
-          //                         alignment: (data[index].userId !=
-          //                                 firebaseAuth.currentUser!.uid
-          //                             ? Alignment.topLeft
-          //                             : Alignment.topRight),
-          //                         child: Container(
-          //                           decoration: BoxDecoration(
-          //                             borderRadius: BorderRadius.circular(20),
-          //                             // color: (messages[index].messageType == "receiver"
-          //                             color: (data[index].userId !=
-          //                                     firebaseAuth.currentUser!.uid
-          //                                 ? Colors.grey.shade200
-          //                                 : Colors.blue[200]),
-          //                           ),
-          //                           padding: const EdgeInsets.all(16),
-          //                           child: Text(
-          //                             data[index].text!,
-          //                             style: const TextStyle(fontSize: 15),
-          //                           ),
-          //                         ),
-          //                       ),
-          //                     );
-          //                   },
-          //                 );
-          //         } else if (snapshot.hasError) {
-          //           return Center(
-          //             child: Text(snapshot.error.toString()),
-          //           );
-          //         }
-          //       }
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     },
-          //   ),
-          // ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -265,14 +209,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     width: 15,
                   ),
                   FloatingActionButton(
-                    onPressed: () async {
-                      setState(() {});
-                      channel?.innerWebSocket?.add(messageController.text);
-                      // await apiService.createUserMessage(
-                      //     roomId: widget.chatData?.id,
-                      //     chatMessage:
-                      //         ChatMessage(text: messageController.text));
-                      messageController.clear();
+                    onPressed: () {
+                      final text = messageController.text.trim();
+                      if (text != "") {
+                        channel?.innerWebSocket!.add(jsonEncode({
+                          "text": text
+                        }));
+                        messageController.clear();
+                      }
                     },
                     backgroundColor: Colors.blue,
                     elevation: 0,
