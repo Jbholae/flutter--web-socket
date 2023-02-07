@@ -67,16 +67,16 @@ class _LoginUserState extends State<LoginUser> {
                 ]),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
                     try {
-                      firebaseAuth.signInWithEmailAndPassword(
+                      await firebaseAuth.signInWithEmailAndPassword(
                         email: formKey.currentState?.value['email'],
                         password: formKey.currentState?.value['password'],
                       );
                     } on FirebaseAuthException catch (e) {
-                      showError(message: e.toString());
+                      showError(message: e.message ?? "");
                     }
                   }
                 },

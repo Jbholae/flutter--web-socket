@@ -40,6 +40,11 @@ class AppRouter {
   }
 
   static Route<dynamic> _materialRoute(Widget view) {
-    return MaterialPageRoute(builder: (_) => view);
+    return MaterialPageRoute(builder: (_) {
+      return GestureDetector(
+        onTap: () => App.dismissKeyboard(),
+        child: view,
+      );
+    });
   }
 }
