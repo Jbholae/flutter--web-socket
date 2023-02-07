@@ -29,9 +29,11 @@ class AppRepoImplementation implements AppRepo {
   @override
   Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
     var cursor = DateTime.now().toUtc().toIso8601String();
-
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-    final response = await dio.get("/rooms/get-rooms?$cursor");
+
+    final response = await dio.get("/rooms/get-rooms", queryParameters: {
+      "cursor": cursor,
+    });
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
     return dataList;
@@ -43,7 +45,9 @@ class AppRepoImplementation implements AppRepo {
 
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
 
-    final response = await dio.get("/rooms/messages/$roomId?$cursor");
+    final response = await dio.get("/rooms/messages/$roomId", queryParameters: {
+      "cursor": cursor,
+    });
     List data = response.data['data'];
     List<ChatMessage> messageList =
         data.map((e) => ChatMessage.fromJson(e)).toList();
