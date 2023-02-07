@@ -11,7 +11,7 @@ abstract class AppRepo {
 
   Future getUserRoom({String? cursor});
 
-  Future createUserMessage({int? roomId, ChatMessage? chatMessage});
+  // Future createUserMessage({int? roomId, ChatMessage? chatMessage});
 
   Stream getUserMessage({int roomId});
 
