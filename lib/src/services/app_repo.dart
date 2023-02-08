@@ -1,3 +1,4 @@
+import '../models/chat_message_model.dart';
 import '../models/user/user.dart';
 
 abstract class AppRepo {
@@ -7,7 +8,7 @@ abstract class AppRepo {
 
   Future getUserRoom({String? cursor});
 
-  Stream getUserMessage({int roomId});
+  Future<List<ChatMessage>> getUserMessage({int? roomId});
 
   Future followUser({String userId});
 

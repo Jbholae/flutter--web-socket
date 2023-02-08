@@ -31,7 +31,7 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Stream<List<ChatMessage>> getUserMessage({int? roomId}) async* {
+  Future<List<ChatMessage>> getUserMessage({int? roomId}) async {
     var cursor = DateTime.now().toUtc().toIso8601String();
 
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
@@ -42,7 +42,7 @@ class AppRepoImplementation implements AppRepo {
     List data = response.data['data'];
     List<ChatMessage> messageList =
         data.map((e) => ChatMessage.fromJson(e)).toList();
-    yield messageList;
+    return messageList;
   }
 
   @override
