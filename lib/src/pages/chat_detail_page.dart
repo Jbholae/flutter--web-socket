@@ -27,9 +27,8 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  final formKey = GlobalKey<FormBuilderState>();
   final messageController = TextEditingController();
-  IOWebSocketChannel? channel;
+  late final IOWebSocketChannel channel;
 
   @override
   void initState() {
@@ -190,19 +189,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     width: 15,
                   ),
                   Expanded(
-                    child: FormBuilder(
-                      key: formKey,
-                      child: FormBuilderTextField(
-                        name: 'message',
-                        controller: messageController,
-                        validator: FormBuilderValidators.required(
-                          errorText: "Cannot be Empty !",
-                        ),
-                        decoration: const InputDecoration(
-                            hintText: "Write message...",
-                            hintStyle: TextStyle(color: Colors.black54),
-                            border: InputBorder.none),
+                    child: FormBuilderTextField(
+                      name: 'message',
+                      controller: messageController,
+                      validator: FormBuilderValidators.required(
+                        errorText: "Cannot be Empty !",
                       ),
+                      decoration: const InputDecoration(
+                          hintText: "Write message...",
+                          hintStyle: TextStyle(color: Colors.black54),
+                          border: InputBorder.none),
                     ),
                   ),
                   const SizedBox(
@@ -212,7 +208,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     onPressed: () {
                       final text = messageController.text.trim();
                       if (text != "") {
-                        channel?.innerWebSocket!.add(jsonEncode({
+                        channel.innerWebSocket!.add(jsonEncode({
                           "text": text
                         }));
                         messageController.clear();

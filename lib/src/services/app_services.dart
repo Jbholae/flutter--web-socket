@@ -20,7 +20,6 @@ class AppRepoImplementation implements AppRepo {
 
   @override
   Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
-    var cursor = DateTime.now().toUtc().toIso8601String();
     cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
 
     final response = await dio.get("/rooms/get-rooms", queryParameters: {
