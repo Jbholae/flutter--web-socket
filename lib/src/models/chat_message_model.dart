@@ -1,13 +1,15 @@
 class ChatMessage {
   int? id;
   String? text;
-  int? userRoomId;
+  int? roomId;
   String? userId;
+  String? status;
   ChatMessage({
     this.id,
     this.text,
-    this.userRoomId,
+    this.roomId,
     this.userId,
+    this.status,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -16,14 +18,16 @@ class ChatMessage {
         // messageContent: json['message_content'],
         // messageType: json['message_type'],
         text: json['text'],
-        userRoomId: json['room_id'],
+        roomId: json['room_id'],
+        status: json['status'],
         userId: json['user_id']);
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "text": text,
-        "room_id": userRoomId,
+        "room_id": roomId,
         "user_id": userId,
+        "status": status,
       };
 }

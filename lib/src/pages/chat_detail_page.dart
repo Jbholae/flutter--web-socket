@@ -45,10 +45,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
           },
         );
-        channel!.stream.listen((event) {
-          print(event);
-        }, onError: (error) {
-          print("Error : $error");
+        channel.stream.listen((event) {
+          final data = ChatMessage.fromJson(jsonDecode(event));
+          messageStream.add(messageStream.value
+              .map((e) => (e.id == null || e.id == data.id) ? data : e)
+              .toList());
         });
       })();
     });
@@ -137,7 +138,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
-                                      // color: (messages[index].messageType == "receiver"
                                       color: (data[index].userId !=
                                               firebaseAuth.currentUser!.uid
                                           ? Colors.grey.shade200
@@ -216,7 +216,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         final data = ChatMessage(
                           text: text,
                           userId: uid,
-                          userRoomId: widget.chatData.id,
+                          roomId: widget.chatData.id,
+                          status: "Sending..."
                         );
                         messageStream.add([
                           data,
