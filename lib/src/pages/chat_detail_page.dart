@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../models/rooms/chat_room_model.dart';
@@ -29,6 +30,9 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final messageController = TextEditingController();
   late final IOWebSocketChannel channel;
+  late BehaviorSubject<List<ChatMessage>> messageStream =
+  BehaviorSubject<List<ChatMessage>>()
+    ..addStream(apiService.getUserMessage(roomId: widget.chatData.id).asStream());
 
   @override
   void initState() {
@@ -54,7 +58,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   void dispose() {
-    channel?.innerWebSocket?.close();
+    messageStream.close();
+    channel.innerWebSocket?.close();
     super.dispose();
   }
 
@@ -102,9 +107,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         children: <Widget>[
           Expanded(
             child: StreamBuilder<List<ChatMessage>>(
-              stream: apiService.getUserMessage(roomId: widget.chatData.id),
+              stream: messageStream.stream,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.connectionState == ConnectionState.active) {
                   if (snapshot.hasData) {
                     var data = snapshot.data;
                     return data!.isEmpty
@@ -208,9 +213,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     onPressed: () {
                       final text = messageController.text.trim();
                       if (text != "") {
-                        channel.innerWebSocket!.add(jsonEncode({
-                          "text": text
-                        }));
+                        final data = ChatMessage(
+                          text: text,
+                          userId: uid,
+                          userRoomId: widget.chatData.id,
+                        );
+                        messageStream.add([
+                          data,
+                          ...messageStream.value,
+                        ]);
+                        channel.innerWebSocket!.add(jsonEncode(data.toJson()));
                         messageController.clear();
                       }
                     },
