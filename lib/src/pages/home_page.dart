@@ -1,24 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
 
-import '../../config.dart';
-import '../injector.dart';
 import 'all_user_screen.dart';
 import 'register_user.dart';
 import 'rooms.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
-
-  final IOWebSocketChannel channel = IOWebSocketChannel.connect(
-    "${Config.socketUrl}/users/notify",
-    headers: {
-      HttpHeaders.authorizationHeader:
-      'Bearer ${sharedPreferences.getString('token')}',
-    },
-  );
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -30,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   _callPage(int current) {
     switch (current) {
       case 0:
-        return RoomsScreen(channel: widget.channel);
+        return const RoomsScreen();
       case 1:
         return const RegisterUser();
       case 2:

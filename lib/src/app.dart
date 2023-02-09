@@ -7,7 +7,7 @@ import 'config/routes/app_routes.dart';
 import 'config/themes/app_theme.dart';
 import 'pages/register_user.dart';
 import 'providers/auth_provider.dart';
-import 'providers/onboarding_provider.dart';
+import 'providers/message_notifier_provider.dart';
 
 final mainNavigator = GlobalKey<NavigatorState>();
 
@@ -19,7 +19,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => OnboardingProvider(),
+          create: (_) => MessageNotifierProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => AuthProvider(),
