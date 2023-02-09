@@ -20,10 +20,8 @@ class AppRepoImplementation implements AppRepo {
 
   @override
   Future<List<ChatRoom>> getUserRoom({String? cursor}) async {
-    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-
     final response = await dio.get("/rooms/get-rooms", queryParameters: {
-      "cursor": cursor,
+      "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
     });
     List data = response.data['data'];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
@@ -45,10 +43,9 @@ class AppRepoImplementation implements AppRepo {
   @override
   Future<List<GetAllUserResponseData>> getAllUser(
       {String? keyword, String? cursor}) async {
-    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
     final response = await dio.get('/users/get-all', queryParameters: {
       "keyword": keyword,
-      "cursor": cursor
+      "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
     });
     List data = response.data['data'];
     List<GetAllUserResponseData> userList =

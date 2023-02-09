@@ -106,7 +106,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget build(BuildContext context) {
     final uid = context.read<AuthProvider>().dbUser?.id;
     var chatUser =
-        widget.room.users!.firstWhere((element) => element.id != uid);
+        widget.room.users.firstWhere((element) => element.id != uid);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -180,7 +180,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           final messageUp =
                               messages.elementAt(min(index + 1, lastIndex));
                           if (messageUp.userId != message.userId) {
-                            final date = DateTime.parse('${message.createdAt}');
+                            final date = DateTime.parse(message.createdAt);
                             final diff = DateTime.now().difference(date).inDays;
                             final time = DateFormat.jm().format(date);
                             return Padding(
@@ -249,6 +249,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             userId: context.read<AuthProvider>().dbUser?.id,
                             roomId: widget.room.id,
                             status: 'Sending',
+                            createdAt: DateTime.now().toUtc().toIso8601String(),
+                            updatedAt: DateTime.now().toUtc().toIso8601String(),
                           );
                           messageStream.add([
                             data,
