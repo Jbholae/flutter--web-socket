@@ -1,74 +1,118 @@
-import 'dart:convert';
-import 'dart:io';
+import 'dart:convert' show jsonDecode, jsonEncode;
+import 'dart:io' show HttpHeaders;
+import 'dart:math' show max, min;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'
+    show
+        AppBar,
+        BoxConstraints,
+        BuildContext,
+        CircleAvatar,
+        Colors,
+        Column,
+        Container,
+        CrossAxisAlignment,
+        Divider,
+        EdgeInsets,
+        Expanded,
+        FontWeight,
+        Icon,
+        IconButton,
+        Icons,
+        InputDecoration,
+        ListView,
+        NetworkImage,
+        Row,
+        Scaffold,
+        SizedBox,
+        State,
+        StatefulWidget,
+        StreamBuilder,
+        Text,
+        TextEditingController,
+        TextField,
+        TextStyle,
+        Theme,
+        Widget;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:rxdart/rxdart.dart' show BehaviorSubject;
+import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
-import '../models/rooms/chat_room_model.dart';
 import '../../config.dart';
+import '../config/api/api.dart';
+import '../config/api/interceptors.dart';
 import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
+import '../models/rooms/chat_room_model.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/atoms/message_list_item.dart';
 
 class ChatDetailPage extends StatefulWidget {
-  const ChatDetailPage({
-    super.key,
-    required this.chatData,
-  });
+  const ChatDetailPage({super.key, required this.room});
 
-  final ChatRoom chatData;
+  final ChatRoom room;
 
   @override
   State<ChatDetailPage> createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  final messageController = TextEditingController();
-  late final IOWebSocketChannel channel;
+  final ScrollController scrollController = ScrollController();
+  late final IOWebSocketChannel ws;
+  late final TextEditingController message = TextEditingController();
+
   late BehaviorSubject<List<ChatMessage>> messageStream =
-  BehaviorSubject<List<ChatMessage>>()
-    ..addStream(apiService.getUserMessage(roomId: widget.chatData.id).asStream());
+      BehaviorSubject<List<ChatMessage>>()
+        ..addStream(apiService.getRoomMessages(widget.room.id).asStream());
 
   @override
   void initState() {
-    setState(() {
-      (() async {
-        channel = IOWebSocketChannel.connect(
-          "${Config.socketUrl}/rooms/chat/${widget.chatData.id}",
-          headers: {
-            HttpHeaders.authorizationHeader:
-                'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
-          },
+    scrollController.addListener(() async {
+      if (scrollController.offset ==
+          scrollController.position.maxScrollExtent) {
+        messageStream.add(
+          messageStream.value +
+              await apiService.getRoomMessages(
+                  widget.room.id, messageStream.value.last.createdAt),
         );
-        channel.stream.listen((event) {
-          final data = ChatMessage.fromJson(jsonDecode(event));
-          messageStream.add(messageStream.value
-              .map((e) => (e.id == null || e.id == data.id) ? data : e)
-              .toList());
-        });
-      })();
+      }
     });
+    String baseUrl =
+        Config.apiUrl.replaceRange(0, Config.apiUrl.indexOf("/") + 2, "");
 
+      setState(() {
+        (() async {
+          ws = IOWebSocketChannel.connect(
+            'ws://$baseUrl/rooms/chat/${widget.room.id}',
+            headers: {HttpHeaders.authorizationHeader: "Bearer ${await firebaseAuth.currentUser?.getIdToken()}"},
+          );
+
+          ws.stream.listen((event) {
+            final data = ChatMessage.fromJson(jsonDecode(event));
+            messageStream.add(messageStream.value
+                .map((e) => (e.id == null || e.id == data.id) ? data : e)
+                .toList());
+          });
+
+        })();
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    scrollController.dispose();
     messageStream.close();
-    channel.innerWebSocket?.close();
+    ws.innerWebSocket?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final uid = context.read<AuthProvider>().dbUser?.id;
-    var chatUser =
-        widget.chatData.users!.firstWhere((element) => element.id != uid);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -86,161 +130,135 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  chatUser.name,
+                  widget.room.name,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 Text(
                   "Online",
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                 ),
               ],
             )
           ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: StreamBuilder<List<ChatMessage>>(
-              stream: messageStream.stream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  if (snapshot.hasData) {
-                    var data = snapshot.data;
-                    return data!.isEmpty
-                        ? const Center(
-                            child: Text('Start a conversation !!!'),
-                          )
-                        : ListView.builder(
-                            reverse: true,
-                            itemCount: data.length,
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.only(
-                              top: 10,
-                              bottom: 10,
-                            ),
-                            itemBuilder: (context, index) {
-                              return Container(
-                                padding: const EdgeInsets.only(
-                                    left: 14, right: 14, top: 10, bottom: 10),
-                                child: Align(
-                                  // alignment: (messages[index].messageType == "receiver"
-                                  alignment: (data[index].userId !=
-                                          firebaseAuth.currentUser!.uid
-                                      ? Alignment.topLeft
-                                      : Alignment.topRight),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: (data[index].userId !=
-                                              firebaseAuth.currentUser!.uid
-                                          ? Colors.grey.shade200
-                                          : Colors.blue[200]),
-                                    ),
-                                    padding: const EdgeInsets.all(16),
-                                    child: Text(
-                                      data[index].text!,
-                                      style: const TextStyle(fontSize: 15),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(snapshot.error.toString()),
-                    );
-                  }
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
-              height: 60,
-              width: double.infinity,
-              color: Colors.white,
-              child: Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlue,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  Expanded(
-                    child: FormBuilderTextField(
-                      name: 'message',
-                      controller: messageController,
-                      validator: FormBuilderValidators.required(
-                        errorText: "Cannot be Empty !",
-                      ),
-                      decoration: const InputDecoration(
-                          hintText: "Write message...",
-                          hintStyle: TextStyle(color: Colors.black54),
-                          border: InputBorder.none),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      final text = messageController.text.trim();
-                      if (text != "") {
-                        final data = ChatMessage(
-                          text: text,
-                          userId: uid,
-                          roomId: widget.chatData.id,
-                          status: "Sending..."
-                        );
-                        messageStream.add([
-                          data,
-                          ...messageStream.value,
-                        ]);
-                        channel.innerWebSocket!.add(jsonEncode(data.toJson()));
-                        messageController.clear();
-                      }
+      body: StreamBuilder<List<ChatMessage>>(
+          stream: messageStream,
+          builder: (context, snapshot) {
+            final messages = snapshot.data ?? [];
+            final lastIndex = messages.length - 1;
+            return Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.separated(
+                    reverse: true,
+                    padding:
+                        const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+                    controller: scrollController,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final lastIndex = messages.length - 1;
+                      return MessageListItem(
+                        message: messages[index],
+                        messageUp:
+                            messages.elementAt(min(index + 1, lastIndex)),
+                        messageDown: messages.elementAt(max(index - 1, 0)),
+                        index: index,
+                        lastIndex: lastIndex,
+                      );
                     },
-                    backgroundColor: Colors.blue,
-                    elevation: 0,
-                    child: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 18,
-                    ),
+                    separatorBuilder: (BuildContext context, int index) {
+                      final message = messages[index];
+                      final messageUp =
+                          messages.elementAt(min(index + 1, lastIndex));
+                      if (messageUp.userId != message.userId) {
+                        final date = DateTime.parse('${message.createdAt}');
+                        final diff = DateTime.now().difference(date).inDays;
+                        final time = DateFormat.jm().format(date);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Center(
+                            child: Text(
+                              diff > 6
+                                  ? DateFormat.MMMEd().format(date)
+                                  : diff > 1
+                                      ? '${DateFormat.E().format(date)} $time'
+                                      : time,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                        );
+                      }
+                      return const Divider(
+                        height: 2,
+                        thickness: 0,
+                        color: Colors.transparent,
+                      );
+                    },
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        color: Colors.blue[400],
+                        constraints:
+                            const BoxConstraints(minHeight: 16, minWidth: 16),
+                        splashRadius: 18,
+                        onPressed: () {},
+                      ),
+                      // const SizedBox(width: ),
+                      Expanded(
+                        child: TextField(
+                          controller: message,
+                          minLines: 1,
+                          maxLines: 6,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: "Aa",
+                            fillColor: Colors.grey[200],
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.send, size: 20),
+                        color: Colors.blue[400],
+                        constraints:
+                            const BoxConstraints(minHeight: 16, minWidth: 16),
+                        splashRadius: 18,
+                        onPressed: () {
+                          final text = message.text.trim();
+                          if (text != "") {
+                            final data = ChatMessage(
+                              text: message.text.trim(),
+                              userId: context.read<AuthProvider>().dbUser?.id,
+                              roomId: widget.room.id,
+                              status: 'Sending',
+                            );
+                            messageStream.add([
+                              data,
+                              ...messageStream.value,
+                            ]);
+                            ws.innerWebSocket!.add(jsonEncode(data.toJson()));
+                            message.clear();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }),
     );
   }
 }

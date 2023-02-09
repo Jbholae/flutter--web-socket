@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
 import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
 import 'register_user.dart';
@@ -17,8 +18,6 @@ class LoginUser extends StatefulWidget {
 
 class _LoginUserState extends State<LoginUser> {
   final formKey = GlobalKey<FormBuilderState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   bool visibility = true;
 
   @override
@@ -37,7 +36,6 @@ class _LoginUserState extends State<LoginUser> {
               ),
               FormBuilderTextField(
                 name: "email",
-                controller: emailController,
                 decoration: const InputDecoration(
                   hintText: "Email",
                 ),
@@ -48,7 +46,6 @@ class _LoginUserState extends State<LoginUser> {
               ),
               FormBuilderTextField(
                 name: "password",
-                controller: passwordController,
                 decoration: InputDecoration(
                     hintText: "Password",
                     suffixIcon: IconButton(
@@ -95,7 +92,7 @@ class _LoginUserState extends State<LoginUser> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.of(context)
-                          .pushNamed(RegisterUser.routeName),
+                          .pushReplacementNamed(RegisterUser.routeName),
                       child: const Text("Create"),
                     ),
                   ],

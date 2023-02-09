@@ -12,10 +12,6 @@ import 'providers/onboarding_provider.dart';
 final mainNavigator = GlobalKey<NavigatorState>();
 
 class App extends StatelessWidget {
-  static void dismissKeyboard() {
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
-
   const App({Key? key}) : super(key: key);
 
   @override

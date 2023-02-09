@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app.dart';
+import '../../injector.dart';
 import '../../models/rooms/chat_room_model.dart';
 import '../../pages/chat_detail_page.dart';
 import '../../pages/home_page.dart';
@@ -28,7 +29,7 @@ class AppRouter {
           return _materialRoute(HomePage());
         case "/chat":
           return _materialRoute(
-            ChatDetailPage(chatData: settings.arguments as ChatRoom),
+            ChatDetailPage(room: settings.arguments as ChatRoom),
           );
       }
     }
@@ -40,11 +41,11 @@ class AppRouter {
   }
 
   static Route<dynamic> _materialRoute(Widget view) {
-    return MaterialPageRoute(builder: (_) {
-      return GestureDetector(
-        onTap: () => App.dismissKeyboard(),
+    return MaterialPageRoute(
+      builder: (_) => GestureDetector(
+        onTap: () => dismissKeyboard(),
         child: view,
-      );
-    });
+      ),
+    );
   }
 }

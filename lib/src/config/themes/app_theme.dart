@@ -93,8 +93,9 @@ class AppTheme {
       visualDensity: VisualDensity.adaptivePlatformDensity,
       // fontFamily: GoogleFonts.sourceSansPro().fontFamily,
       inputDecorationTheme: InputDecorationTheme(
-        labelStyle: captionBold,
-        floatingLabelStyle: captionBold,
+        filled: true,
+        labelStyle: captionRegular,
+        floatingLabelStyle: captionRegular,
         hintStyle: captionRegular.copyWith(color: AppColors.greyDark),
         counterStyle: subHeading.copyWith(
           color: AppColors.greyDark,
@@ -102,24 +103,24 @@ class AppTheme {
         errorStyle: subHeading.copyWith(color: Colors.red),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         focusedErrorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Colors.red, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderSide: BorderSide.none,
         ),
         errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Colors.red, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: AppColors.greyDark, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderSide: BorderSide.none,
         ),
         disabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: AppColors.greyDark, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: AppColors.primary, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderSide: BorderSide.none,
         ),
       ),
       textTheme: TextTheme(

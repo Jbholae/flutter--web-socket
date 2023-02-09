@@ -1,9 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart' show ChangeNotifier, ModalRoute;
 
 import '../app.dart';
 import '../config/firebase/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
-
 import '../injector.dart';
 import '../models/user/user.dart';
 import '../pages/login_user.dart';
@@ -54,5 +53,6 @@ class AuthProvider with ChangeNotifier {
   bool get loggedIn => _loggedIn;
 
   auth.User? _user;
+
   auth.User? get user => _user;
 }
