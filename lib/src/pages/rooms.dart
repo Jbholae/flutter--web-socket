@@ -1,19 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../../config.dart';
 import '../app.dart';
-import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/rooms/chat_room_model.dart';
 import '../providers/auth_provider.dart';
 
 class RoomsScreen extends StatefulWidget {
-  const RoomsScreen({super.key});
+  const RoomsScreen({super.key, required this.channel});
+
+  final IOWebSocketChannel channel;
 
   @override
   State<RoomsScreen> createState() => _RoomsScreenState();
@@ -21,33 +19,6 @@ class RoomsScreen extends StatefulWidget {
 
 class _RoomsScreenState extends State<RoomsScreen> {
   Future<List<ChatRoom>> myFuture = apiService.getUserRoom();
-  IOWebSocketChannel? channel;
-
-  @override
-  void initState() {
-    setState(() {
-      (() async {
-        channel = IOWebSocketChannel.connect(
-          "${Config.socketUrl}/users/notify",
-          headers: {
-            HttpHeaders.authorizationHeader:
-                'Bearer ${await firebaseAuth.currentUser?.getIdToken()}',
-          },
-        );
-        channel!.stream.listen(
-          (event) {
-            print("Notifier event");
-            print(event);
-          },
-          onError: (error) {
-            print("Error : $error");
-          },
-        );
-      })();
-    });
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,7 @@ class DioAuthInterceptors extends Interceptor {
     debugPrint(options.uri.toString());
     String? token = await firebaseAuth.currentUser?.getIdToken();
     if (token != null) {
-    await sharedPreferences.setString('token', token);
+      sharedPreferences.setString('token', token);
       options.headers
           .addAll({HttpHeaders.authorizationHeader: "Bearer $token"});
     }

@@ -25,7 +25,7 @@ class AppRouter {
     if (authContext.loggedIn) {
       switch (settings.name) {
         case "/":
-          return _materialRoute(const HomePage());
+          return _materialRoute(HomePage());
         case "/chat":
           return _materialRoute(
             ChatDetailPage(chatData: settings.arguments as ChatRoom),
