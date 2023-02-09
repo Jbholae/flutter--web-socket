@@ -31,18 +31,15 @@ class AppRepoImplementation implements AppRepo {
   }
 
   @override
-  Future<List<ChatMessage>> getUserMessage({int? roomId}) async {
-    var cursor = DateTime.now().toUtc().toIso8601String();
-
-    cursor == "" ? DateTime.now().toUtc().toIso8601String() : cursor;
-
-    final response = await dio.get("/rooms/messages/$roomId", queryParameters: {
-      "cursor": cursor,
-    });
+  Future<List<ChatMessage>> getRoomMessage(int roomId, [String? cursor]) async {
+    final response = await dio.get(
+      "/rooms/messages/$roomId",
+      queryParameters: {
+        "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
+      },
+    );
     List data = response.data['data'];
-    List<ChatMessage> messageList =
-        data.map((e) => ChatMessage.fromJson(e)).toList();
-    return messageList;
+    return data.map((e) => ChatMessage.fromJson(e)).toList();
   }
 
   @override
