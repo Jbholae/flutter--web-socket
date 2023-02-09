@@ -1,7 +1,7 @@
 import '../user/user.dart';
 
 class ChatRoom {
-  int? id;
+  int id;
   String? name;
   bool? isPrivate;
   String? createdAt;
@@ -10,13 +10,13 @@ class ChatRoom {
   Iterable<User>? users;
 
   ChatRoom({
-    this.createdAt,
-    this.deletedAt,
-    this.id,
+    required this.id,
     this.name,
-    this.updatedAt,
     this.isPrivate,
     this.users,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
