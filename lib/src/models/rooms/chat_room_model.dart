@@ -1,21 +1,24 @@
+import '../chat_message_model.dart';
 import '../user/user.dart';
 
 class ChatRoom {
   int id;
   String? name;
-  bool? isPrivate;
-  String? createdAt;
-  String? updatedAt;
+  bool isPrivate;
+  String createdAt;
+  String updatedAt;
   String? deletedAt;
-  Iterable<User>? users;
+  Iterable<User> users;
+  ChatMessage? latestMessage;
 
   ChatRoom({
     required this.id,
+    required this.isPrivate,
+    required this.users,
+    required this.createdAt,
+    required this.updatedAt,
     this.name,
-    this.isPrivate,
-    this.users,
-    this.createdAt,
-    this.updatedAt,
+    this.latestMessage,
     this.deletedAt,
   });
 
@@ -27,6 +30,9 @@ class ChatRoom {
       name: json['name'],
       updatedAt: json['updated_at'],
       isPrivate: json['is_private'],
+      latestMessage: json['latest_message'] != null
+          ? ChatMessage.fromJson(json['latest_message'])
+          : null,
       users: (json["users"] as List).map((e) => User.fromJson(e)),
     );
   }
@@ -39,7 +45,8 @@ class ChatRoom {
       'id': id,
       'name': name,
       'is_private': isPrivate,
-      'users': users?.map((e) => e.toJson()),
+      'latest_message': latestMessage?.toJson(),
+      'users': users.map((e) => e.toJson()),
     };
   }
 }

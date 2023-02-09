@@ -6,8 +6,8 @@ class ChatMessage {
   String userId;
   int roomId;
   User? user;
-  String? createdAt;
-  String? updatedAt;
+  String createdAt;
+  String updatedAt;
   String? deletedAt;
   String status;
 
@@ -17,14 +17,11 @@ class ChatMessage {
     required this.text,
     required this.roomId,
     required this.userId,
+    required this.createdAt,
+    required this.updatedAt,
     this.user,
-    this.createdAt,
-    this.updatedAt,
     this.deletedAt,
-  }) {
-    createdAt = createdAt ?? DateTime.now().toUtc().toIso8601String();
-    updatedAt = updatedAt ?? createdAt;
-  }
+  });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -33,8 +30,8 @@ class ChatMessage {
       status: json['status'] ?? "Sent",
       userId: json['user_id'] as String,
       roomId: json['room_id'] as int,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      createdAt: json['created_at'] ,
+      updatedAt: json['updated_at'] ,
       deletedAt: json['deleted_at'] as String?,
       user: json['user'] != null
           ? User.fromJson(json['user'])
@@ -50,8 +47,8 @@ class ChatMessage {
       "user_id": userId,
       "room_id": roomId,
       "user": user?.toJson() ?? {},
-      "created_at": createdAt ?? DateTime.now().toUtc().toIso8601String(),
-      "updated_at": updatedAt ?? DateTime.now().toUtc().toIso8601String(),
+      "created_at": createdAt,
+      "updated_at": updatedAt,
       "deleted_at": deletedAt,
     };
   }
