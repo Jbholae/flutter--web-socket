@@ -2,8 +2,8 @@ import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show HttpHeaders;
 import 'dart:math' show max, min;
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
         AppBar,
@@ -42,9 +42,6 @@ import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 
 import '../../config.dart';
-import '../config/api/api.dart';
-import '../config/api/interceptors.dart';
-import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
@@ -61,13 +58,19 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  final ScrollController scrollController = ScrollController();
-  late final IOWebSocketChannel ws;
-  late final TextEditingController message = TextEditingController();
+  final message = TextEditingController();
+  final scrollController = ScrollController();
+  late final IOWebSocketChannel ws = IOWebSocketChannel.connect(
+    "${Config.socketUrl}/rooms/chat/${widget.room.id}",
+    headers: {
+      HttpHeaders.authorizationHeader:
+          'Bearer ${sharedPreferences.getString('token')}',
+    },
+  );
 
   late BehaviorSubject<List<ChatMessage>> messageStream =
       BehaviorSubject<List<ChatMessage>>()
-        ..addStream(apiService.getRoomMessages(widget.room.id).asStream());
+        ..addStream(apiService.getRoomMessage(widget.room.id).asStream());
 
   @override
   void initState() {
@@ -76,29 +79,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           scrollController.position.maxScrollExtent) {
         messageStream.add(
           messageStream.value +
-              await apiService.getRoomMessages(
+              await apiService.getRoomMessage(
                   widget.room.id, messageStream.value.last.createdAt),
         );
       }
     });
-    String baseUrl =
-        Config.apiUrl.replaceRange(0, Config.apiUrl.indexOf("/") + 2, "");
 
-      setState(() {
-        (() async {
-          ws = IOWebSocketChannel.connect(
-            'ws://$baseUrl/rooms/chat/${widget.room.id}',
-            headers: {HttpHeaders.authorizationHeader: "Bearer ${await firebaseAuth.currentUser?.getIdToken()}"},
-          );
-
-          ws.stream.listen((event) {
-            final data = ChatMessage.fromJson(jsonDecode(event));
-            messageStream.add(messageStream.value
-                .map((e) => (e.id == null || e.id == data.id) ? data : e)
-                .toList());
-          });
-
-        })();
+    ws.stream.listen((event) {
+      final data = ChatMessage.fromJson(jsonDecode(event));
+      messageStream.add(messageStream.value
+          .map((e) => (e.id == null || e.id == data.id) ? data : e)
+          .toList());
     });
     super.initState();
   }
@@ -113,6 +104,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final uid = context.read<AuthProvider>().dbUser?.id;
+    var chatUser =
+        widget.room.users!.firstWhere((element) => element.id != uid);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -130,13 +124,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.room.name,
+                  chatUser.fullName,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   "Online",
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             )
@@ -144,121 +143,129 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ),
       ),
       body: StreamBuilder<List<ChatMessage>>(
-          stream: messageStream,
-          builder: (context, snapshot) {
-            final messages = snapshot.data ?? [];
-            final lastIndex = messages.length - 1;
-            return Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView.separated(
-                    reverse: true,
-                    padding:
-                        const EdgeInsets.only(bottom: 8, left: 12, right: 12),
-                    controller: scrollController,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final lastIndex = messages.length - 1;
-                      return MessageListItem(
-                        message: messages[index],
-                        messageUp:
-                            messages.elementAt(min(index + 1, lastIndex)),
-                        messageDown: messages.elementAt(max(index - 1, 0)),
-                        index: index,
-                        lastIndex: lastIndex,
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      final message = messages[index];
-                      final messageUp =
-                          messages.elementAt(min(index + 1, lastIndex));
-                      if (messageUp.userId != message.userId) {
-                        final date = DateTime.parse('${message.createdAt}');
-                        final diff = DateTime.now().difference(date).inDays;
-                        final time = DateFormat.jm().format(date);
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Center(
-                            child: Text(
-                              diff > 6
-                                  ? DateFormat.MMMEd().format(date)
-                                  : diff > 1
-                                      ? '${DateFormat.E().format(date)} $time'
-                                      : time,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          ),
-                        );
-                      }
-                      return const Divider(
-                        height: 2,
-                        thickness: 0,
-                        color: Colors.transparent,
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        color: Colors.blue[400],
-                        constraints:
-                            const BoxConstraints(minHeight: 16, minWidth: 16),
-                        splashRadius: 18,
-                        onPressed: () {},
-                      ),
-                      // const SizedBox(width: ),
-                      Expanded(
-                        child: TextField(
-                          controller: message,
-                          minLines: 1,
-                          maxLines: 6,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            hintText: "Aa",
-                            fillColor: Colors.grey[200],
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.send, size: 20),
-                        color: Colors.blue[400],
-                        constraints:
-                            const BoxConstraints(minHeight: 16, minWidth: 16),
-                        splashRadius: 18,
-                        onPressed: () {
-                          final text = message.text.trim();
-                          if (text != "") {
-                            final data = ChatMessage(
-                              text: message.text.trim(),
-                              userId: context.read<AuthProvider>().dbUser?.id,
-                              roomId: widget.room.id,
-                              status: 'Sending',
+        stream: messageStream,
+        builder: (context, snapshot) {
+          if (kDebugMode && snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+
+          final messages = snapshot.data ?? [];
+          final lastIndex = messages.length - 1;
+          return Column(
+            children: <Widget>[
+              Expanded(
+                child: messages.isEmpty
+                    ? const Center(child: Text("Start a conversation"))
+                    : ListView.separated(
+                        reverse: true,
+                        padding: const EdgeInsets.only(
+                            bottom: 8, left: 12, right: 12),
+                        controller: scrollController,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final lastIndex = messages.length - 1;
+                          return MessageListItem(
+                            message: messages[index],
+                            messageUp:
+                                messages.elementAt(min(index + 1, lastIndex)),
+                            messageDown: messages.elementAt(max(index - 1, 0)),
+                            index: index,
+                            lastIndex: lastIndex,
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          final message = messages[index];
+                          final messageUp =
+                              messages.elementAt(min(index + 1, lastIndex));
+                          if (messageUp.userId != message.userId) {
+                            final date = DateTime.parse('${message.createdAt}');
+                            final diff = DateTime.now().difference(date).inDays;
+                            final time = DateFormat.jm().format(date);
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Center(
+                                child: Text(
+                                  diff > 6
+                                      ? DateFormat.MMMEd().format(date)
+                                      : diff > 1
+                                          ? '${DateFormat.E().format(date)} $time'
+                                          : time,
+                                  style: Theme.of(context).textTheme.caption,
+                                ),
+                              ),
                             );
-                            messageStream.add([
-                              data,
-                              ...messageStream.value,
-                            ]);
-                            ws.innerWebSocket!.add(jsonEncode(data.toJson()));
-                            message.clear();
                           }
+                          return const Divider(
+                            height: 2,
+                            thickness: 0,
+                            color: Colors.transparent,
+                          );
                         },
                       ),
-                    ],
-                  ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      color: Colors.blue[400],
+                      constraints:
+                          const BoxConstraints(minHeight: 16, minWidth: 16),
+                      splashRadius: 18,
+                      onPressed: () {},
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: message,
+                        minLines: 1,
+                        maxLines: 6,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: "Aa",
+                          fillColor: Colors.grey[200],
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.send, size: 20),
+                      color: Colors.blue[400],
+                      constraints:
+                          const BoxConstraints(minHeight: 16, minWidth: 16),
+                      splashRadius: 18,
+                      onPressed: () {
+                        final text = message.text.trim();
+                        if (text != "") {
+                          final data = ChatMessage(
+                            text: message.text.trim(),
+                            userId: context.read<AuthProvider>().dbUser?.id,
+                            roomId: widget.room.id,
+                            status: 'Sending',
+                          );
+                          messageStream.add([
+                            data,
+                            ...messageStream.value,
+                          ]);
+                          ws.innerWebSocket!.add(jsonEncode(data.toJson()));
+                          message.clear();
+                        }
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            );
-          }),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
