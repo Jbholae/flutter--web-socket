@@ -43,7 +43,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
                                 .firstWhere((element) => element.id != uid);
                             return ListTile(
                               title: Text(
-                                chatUser.name,
+                                chatUser.fullName,
                               ),
                               subtitle: Text(
                                   "${"<Latest Message here>"} . ${DateFormat.jm().format(DateTime.now())}"),
