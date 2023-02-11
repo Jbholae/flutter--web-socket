@@ -1,7 +1,34 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
+import 'package:flutter/material.dart'
+    show
+        BorderRadius,
+        BoxDecoration,
+        BuildContext,
+        Center,
+        Column,
+        Container,
+        EdgeInsets,
+        ElevatedButton,
+        GlobalKey,
+        Icon,
+        IconButton,
+        Icons,
+        InputDecoration,
+        MainAxisAlignment,
+        Navigator,
+        Padding,
+        Row,
+        SafeArea,
+        Scaffold,
+        State,
+        StatefulWidget,
+        Text,
+        Theme,
+        Widget;
+import 'package:flutter_form_builder/flutter_form_builder.dart'
+    show FormBuilder, FormBuilderState, FormBuilderTextField;
+import 'package:form_builder_validators/form_builder_validators.dart'
+    show FormBuilderValidators;
 
 import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
