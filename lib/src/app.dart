@@ -5,7 +5,8 @@ import 'package:sizer/sizer.dart';
 
 import 'config/routes/app_routes.dart';
 import 'config/themes/app_theme.dart';
-import 'pages/register_user.dart';
+import 'pages/home_page.dart';
+import 'pages/login_page.dart';
 import 'providers/auth_provider.dart';
 import 'providers/message_notifier_provider.dart';
 
@@ -30,11 +31,11 @@ class App extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: kDebugMode,
             navigatorKey: mainNavigator,
-            title: ("Skeleton"),
+            title: ("Chat App"),
             theme: AppTheme.light,
             initialRoute: context.watch<AuthProvider>().loggedIn
-                ? "/"
-                : RegisterUser.routeName,
+                ? HomePage.routeName
+                : LoginPage.routeName,
             onGenerateRoute: (settings) {
               return AppRouter.onGenerateRoutes(
                 settings,

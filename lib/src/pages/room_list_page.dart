@@ -13,14 +13,16 @@ import '../models/rooms/chat_room_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_notifier_provider.dart';
 
-class RoomsScreen extends StatefulWidget {
-  const RoomsScreen({super.key});
+class RoomListPage extends StatefulWidget {
+  static const String routeName = "/room_list";
+
+  const RoomListPage({super.key});
 
   @override
-  State<RoomsScreen> createState() => _RoomsScreenState();
+  State<RoomListPage> createState() => _RoomListPageState();
 }
 
-class _RoomsScreenState extends State<RoomsScreen> {
+class _RoomListPageState extends State<RoomListPage> {
   BehaviorSubject<List<ChatRoom>> roomStream = BehaviorSubject<List<ChatRoom>>()
     ..addStream(apiService.getUserRoom().asStream());
 

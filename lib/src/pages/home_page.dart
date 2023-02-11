@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'all_user_screen.dart';
-import 'register_user.dart';
-import 'rooms.dart';
+import 'register_page.dart';
+import 'room_list_page.dart';
+import 'user_list_page.dart';
 
 class HomePage extends StatefulWidget {
+  static const String routeName = "/";
+
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -17,11 +19,11 @@ class _HomePageState extends State<HomePage> {
   _callPage(int current) {
     switch (current) {
       case 0:
-        return const RoomsScreen();
+        return const RoomListPage();
       case 1:
-        return const RegisterUser();
+        return const RegisterPage();
       case 2:
-        return const AllUserScreen();
+        return const UserListPage();
       default:
     }
   }

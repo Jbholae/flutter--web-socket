@@ -32,18 +32,18 @@ import 'package:form_builder_validators/form_builder_validators.dart'
 
 import '../config/firebase/auth.dart';
 import '../core/utils/snack_bar.dart';
-import 'register_user.dart';
+import 'register_page.dart';
 
-class LoginUser extends StatefulWidget {
-  const LoginUser({super.key});
-
+class LoginPage extends StatefulWidget {
   static const String routeName = "login";
 
+  const LoginPage({super.key});
+
   @override
-  State<LoginUser> createState() => _LoginUserState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginUserState extends State<LoginUser> {
+class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormBuilderState>();
   bool visibility = true;
 
@@ -119,7 +119,7 @@ class _LoginUserState extends State<LoginUser> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.of(context)
-                          .pushReplacementNamed(RegisterUser.routeName),
+                          .pushReplacementNamed(RegisterPage.routeName),
                       child: const Text("Create"),
                     ),
                   ],

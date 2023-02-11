@@ -6,14 +6,16 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../dtos/user/user_list.dart';
 import '../injector.dart';
 
-class AllUserScreen extends StatefulWidget {
-  const AllUserScreen({super.key});
+class UserListPage extends StatefulWidget {
+  static const String routeName = "/user_list";
+
+  const UserListPage({super.key});
 
   @override
-  State<AllUserScreen> createState() => _AllUserScreenState();
+  State<UserListPage> createState() => _UserListPageState();
 }
 
-class _AllUserScreenState extends State<AllUserScreen> {
+class _UserListPageState extends State<UserListPage> {
   TextEditingController searchController = TextEditingController();
 
   Stream<List<UserList>> userData =

@@ -36,18 +36,18 @@ import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/user/user.dart';
 import '../providers/auth_provider.dart';
-import 'login_user.dart';
+import 'login_page.dart';
 
-class RegisterUser extends StatefulWidget {
-  const RegisterUser({Key? key}) : super(key: key);
-
+class RegisterPage extends StatefulWidget {
   static const String routeName = "register";
 
+  const RegisterPage({Key? key}) : super(key: key);
+
   @override
-  State<RegisterUser> createState() => _RegisterUserState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterUserState extends State<RegisterUser> {
+class _RegisterPageState extends State<RegisterPage> {
   bool visibility = true;
 
   final formKey = GlobalKey<FormBuilderState>();
@@ -139,7 +139,7 @@ class _RegisterUserState extends State<RegisterUser> {
                     return ElevatedButton(
                       onPressed: () {
                         mainNavigator.currentState
-                            ?.pushReplacementNamed(LoginUser.routeName);
+                            ?.pushReplacementNamed(LoginPage.routeName);
                       },
                       child: const Text('Login'),
                     );

@@ -5,7 +5,8 @@ import '../app.dart';
 import '../config/firebase/auth.dart';
 import '../injector.dart';
 import '../models/user/user.dart';
-import '../pages/login_user.dart';
+import '../pages/home_page.dart';
+import '../pages/login_page.dart';
 
 class AuthProvider with ChangeNotifier {
   User? _dbUser;
@@ -15,14 +16,14 @@ class AuthProvider with ChangeNotifier {
       if (mainNavigator.currentContext != null) {
         if (loggedIn &&
             ModalRoute.of(mainNavigator.currentContext!)?.settings.name !=
-                "/") {
+                HomePage.routeName) {
           mainNavigator.currentState?.pushReplacementNamed("/");
           return;
         }
 
         if (ModalRoute.of(mainNavigator.currentContext!)?.settings.name !=
-            LoginUser.routeName) {
-          mainNavigator.currentState?.pushReplacementNamed(LoginUser.routeName);
+            LoginPage.routeName) {
+          mainNavigator.currentState?.pushReplacementNamed(LoginPage.routeName);
         }
       }
     });

@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import '../../app.dart';
 import '../../injector.dart';
 import '../../models/rooms/chat_room_model.dart';
-import '../../pages/chat_detail_page.dart';
+import '../../pages/chat_page.dart';
 import '../../pages/home_page.dart';
-import '../../pages/login_user.dart';
-import '../../pages/register_user.dart';
+import '../../pages/login_page.dart';
+import '../../pages/register_page.dart';
 import '../../providers/auth_provider.dart';
 
 class AppRouter {
@@ -16,20 +16,20 @@ class AppRouter {
         Provider.of<AuthProvider>(mainNavigator.currentContext!, listen: false);
     if (!authContext.loggedIn) {
       switch (settings.name) {
-        case RegisterUser.routeName:
-          return _materialRoute(const RegisterUser());
-        case LoginUser.routeName:
-          return _materialRoute(const LoginUser());
+        case RegisterPage.routeName:
+          return _materialRoute(const RegisterPage());
+        case LoginPage.routeName:
+          return _materialRoute(const LoginPage());
       }
     }
 
     if (authContext.loggedIn) {
       switch (settings.name) {
-        case "/":
-          return _materialRoute(HomePage());
-        case "/chat":
+        case HomePage.routeName:
+          return _materialRoute(const HomePage());
+        case ChatPage.routeName:
           return _materialRoute(
-            ChatDetailPage(room: settings.arguments as ChatRoom),
+            ChatPage(room: settings.arguments as ChatRoom),
           );
       }
     }

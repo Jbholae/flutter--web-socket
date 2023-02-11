@@ -48,16 +48,18 @@ import '../models/rooms/chat_room_model.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/atoms/message_list_item.dart';
 
-class ChatDetailPage extends StatefulWidget {
-  const ChatDetailPage({super.key, required this.room});
+class ChatPage extends StatefulWidget {
+  static const String routeName = "chat";
+
+  const ChatPage({super.key, required this.room});
 
   final ChatRoom room;
 
   @override
-  State<ChatDetailPage> createState() => _ChatDetailPageState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatDetailPageState extends State<ChatDetailPage> {
+class _ChatPageState extends State<ChatPage> {
   final message = TextEditingController();
   final scrollController = ScrollController();
   late final IOWebSocketChannel ws = IOWebSocketChannel.connect(
@@ -105,8 +107,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   @override
   Widget build(BuildContext context) {
     final uid = context.read<AuthProvider>().dbUser?.id;
-    var chatUser =
-        widget.room.users.firstWhere((element) => element.id != uid);
+    var chatUser = widget.room.users.firstWhere((element) => element.id != uid);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
