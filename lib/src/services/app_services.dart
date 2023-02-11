@@ -8,14 +8,9 @@ import '../models/user/user.dart';
 import 'app_repo.dart';
 
 class AppRepoImplementation implements AppRepo {
-  var cursor = DateTime.now().toUtc().toIso8601String();
-
   @override
   Future<Response> createUser({required User data}) {
-    return dio.post(
-      "/create",
-      data: data.toJson(),
-    );
+    return dio.post("/create", data: data.toJson());
   }
 
   @override

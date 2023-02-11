@@ -1,10 +1,38 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:provider/provider.dart';
+import 'dart:io';
+
+import 'package:dio/dio.dart' show DioError;
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
+import 'package:flutter/material.dart'
+    show
+        AutovalidateMode,
+        BuildContext,
+        Center,
+        Column,
+        EdgeInsets,
+        ElevatedButton,
+        GlobalKey,
+        Icon,
+        IconButton,
+        Icons,
+        InputDecoration,
+        Key,
+        MainAxisAlignment,
+        Padding,
+        SafeArea,
+        Scaffold,
+        State,
+        StatefulWidget,
+        Text,
+        Widget;
+import 'package:flutter_form_builder/flutter_form_builder.dart'
+    show FormBuilder, FormBuilderState, FormBuilderTextField;
+import 'package:form_builder_validators/form_builder_validators.dart'
+    show FormBuilderValidators;
+import 'package:provider/provider.dart' show Consumer;
 
 import '../app.dart';
 import '../config/firebase/auth.dart';
+import '../core/utils/snack_bar.dart';
 import '../injector.dart';
 import '../models/user/user.dart';
 import '../providers/auth_provider.dart';
@@ -86,19 +114,22 @@ class _RegisterUserState extends State<RegisterUser> {
                         email: formKey.currentState?.value['email'],
                         fullName: formKey.currentState?.value['full_name'],
                         password: formKey.currentState?.value['password'],
-                        id: "",
                       );
 
-                      await apiService
-                          .createUser(
-                        data: userdata,
-                      )
-                          .then((value) {
-                        firebaseAuth.signInWithEmailAndPassword(
-                          email: userdata.email,
-                          password: userdata.password!,
-                        );
-                      });
+                      try {
+                        final value =
+                            await apiService.createUser(data: userdata);
+                        if (value.statusCode == HttpStatus.created) {
+                          await firebaseAuth.signInWithEmailAndPassword(
+                            email: userdata.email,
+                            password: userdata.password!,
+                          );
+                        }
+                      } on DioError catch (e) {
+                        showError(message: e.message);
+                      } on FirebaseAuthException catch (e) {
+                        showError(message: e.message ?? "");
+                      }
                     }
                   },
                   child: const Text('Register'),
