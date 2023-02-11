@@ -44,7 +44,7 @@ import 'package:web_socket_channel/io.dart' show IOWebSocketChannel;
 import '../../config.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
-import '../models/rooms/chat_room_model.dart';
+import '../models/rooms/room.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/atoms/message_list_item.dart';
 
@@ -53,7 +53,7 @@ class ChatPage extends StatefulWidget {
 
   const ChatPage({super.key, required this.room});
 
-  final ChatRoom room;
+  final Room room;
 
   @override
   State<ChatPage> createState() => _ChatPageState();

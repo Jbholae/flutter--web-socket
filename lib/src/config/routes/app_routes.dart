@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../app.dart';
 import '../../injector.dart';
-import '../../models/rooms/chat_room_model.dart';
+import '../../models/rooms/room.dart';
 import '../../pages/chat_page.dart';
 import '../../pages/home_page.dart';
 import '../../pages/login_page.dart';
@@ -29,7 +29,7 @@ class AppRouter {
           return _materialRoute(const HomePage());
         case ChatPage.routeName:
           return _materialRoute(
-            ChatPage(room: settings.arguments as ChatRoom),
+            ChatPage(room: settings.arguments as Room),
           );
       }
     }

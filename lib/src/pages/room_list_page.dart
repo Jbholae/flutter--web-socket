@@ -9,9 +9,10 @@ import 'package:rxdart/rxdart.dart';
 import '../app.dart';
 import '../injector.dart';
 import '../models/chat_message_model.dart';
-import '../models/rooms/chat_room_model.dart';
+import '../models/rooms/room.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_notifier_provider.dart';
+import 'chat_page.dart';
 
 class RoomListPage extends StatefulWidget {
   static const String routeName = "/room_list";
@@ -23,7 +24,7 @@ class RoomListPage extends StatefulWidget {
 }
 
 class _RoomListPageState extends State<RoomListPage> {
-  BehaviorSubject<List<ChatRoom>> roomStream = BehaviorSubject<List<ChatRoom>>()
+  BehaviorSubject<List<Room>> roomStream = BehaviorSubject<List<Room>>()
     ..addStream(apiService.getUserRoom().asStream());
 
   @override
@@ -43,7 +44,7 @@ class _RoomListPageState extends State<RoomListPage> {
     final uid = context.read<AuthProvider>().dbUser?.id;
     return Scaffold(
       body: SafeArea(
-        child: StreamBuilder<List<ChatRoom>>(
+        child: StreamBuilder<List<Room>>(
           stream: roomStream.stream,
           builder: (context, snapshot) {
             if (kDebugMode && snapshot.hasError) {
@@ -96,7 +97,7 @@ class _RoomListPageState extends State<RoomListPage> {
                             : const SizedBox(),
                         onTap: () {
                           mainNavigator.currentState?.pushNamed(
-                            "/chat",
+                            ChatPage.routeName,
                             arguments: room,
                           );
                         },
