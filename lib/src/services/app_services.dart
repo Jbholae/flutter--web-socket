@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 
 import '../config/api/api.dart';
+import '../dtos/user/user_list.dart';
 import '../models/chat_message_model.dart';
 import '../models/rooms/chat_room_model.dart';
-import '../models/user/get_all_user_response.dart/get_all_user_response.dart';
 import '../models/user/user.dart';
 import 'app_repo.dart';
 
@@ -23,7 +23,7 @@ class AppRepoImplementation implements AppRepo {
     final response = await dio.get("/rooms/get-rooms", queryParameters: {
       "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
     });
-    List data = response.data['data'];
+    List data = response.data['data'] ?? [];
     List<ChatRoom> dataList = data.map((e) => ChatRoom.fromJson(e)).toList();
     return dataList;
   }
@@ -36,21 +36,18 @@ class AppRepoImplementation implements AppRepo {
         "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
       },
     );
-    List data = response.data['data'];
+    List data = response.data['data'] ?? [];
     return data.map((e) => ChatMessage.fromJson(e)).toList();
   }
 
   @override
-  Future<List<GetAllUserResponseData>> getAllUser(
-      {String? keyword, String? cursor}) async {
+  Future<List<UserList>> getAllUser({String? keyword, String? cursor}) async {
     final response = await dio.get('/users/get-all', queryParameters: {
       "keyword": keyword,
       "cursor": cursor ?? DateTime.now().toUtc().toIso8601String(),
     });
-    List data = response.data['data'];
-    List<GetAllUserResponseData> userList =
-        data.map((e) => GetAllUserResponseData.fromJson(e)).toList();
-    return userList;
+    List data = response.data['data'] ?? [];
+    return data.map((e) => UserList.fromJson(e)).toList();
   }
 
   @override

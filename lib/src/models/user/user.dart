@@ -1,18 +1,15 @@
-import '../index.dart';
+import 'base_user.dart';
 
-class User extends Indexable {
+class User extends BaseUser {
   User({
-    required this.id,
-    required this.fullName,
-    required this.email,
+    super.id,
+    required super.email,
+    required super.fullName,
     this.password,
     this.updatedAt,
     this.createdAt,
-  }) : super(0);
+  }) : super();
 
-  dynamic id;
-  String fullName;
-  String email;
   String? password;
   String? updatedAt;
   String? createdAt;
@@ -28,9 +25,7 @@ class User extends Indexable {
 
   @override
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "email": email,
-        "full_name": fullName,
+        ...super.toJson(),
         "password": password,
         "updated_at": updatedAt,
         "created_at": createdAt,
